@@ -9,6 +9,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        urbanist: ["var(--font-urbanist)"],
+        roboto: ["var(--font-mono)"],
+        honk: ["var(--font-honk)"],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

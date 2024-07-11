@@ -1,11 +1,28 @@
 import type { Metadata } from "next";
-import { Urbanist } from "next/font/google";
+import { Space_Mono, Urbanist, Honk } from "next/font/google";
 import "./globals.css";
 
 import { PrismicPreview } from "@prismicio/next";
 import { repositoryName } from "@/prismicio";
 
-const urbanist = Urbanist({ subsets: ["latin"] });
+const urbanist = Urbanist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-urbanist",
+});
+
+const honk = Honk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-honk",
+});
+
+const mono = Space_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
+  weight: ["400"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-slate-900 text-slate-100">
-      <body className={urbanist.className}>
+      <body
+        className={`${urbanist.variable} ${mono.variable} ${honk.variable}`}
+      >
         {children}
         <PrismicPreview repositoryName={repositoryName} />
       </body>
