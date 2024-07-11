@@ -13,6 +13,9 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
+// folders
+import { renderLetters } from "@/app/utils/RenderLetters";
+
 /**
  * Props for `Hero`.
  */
@@ -54,18 +57,6 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
       };
   });
 
-  const renderLetters = (name: KeyTextField, key: string) => {
-    if (!name) return;
-    return name.split("").map((letter, index) => (
-      <span
-        key={index}
-        className={`name-animation name-animation-${key} inline-block opacity-0`}
-      >
-        {letter}
-      </span>
-    ));
-  };
-
   return (
     <section
       data-slice-type={slice.slice_type}
@@ -89,29 +80,23 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
             >
               {slice.primary.tag_line}
             </h2>
-            <span className="block font-mono font-light text-xs text-zinc-400">
+            <span className="block prismic-links">
               {slice.primary.job_role}
             </span>
-            <span className="block font-mono font-light text-xs text-zinc-400">
+            <span className="block prismic-links">
               {slice.primary.location}
             </span>
             <div>
               <nav className="block md:hidden mt-2">
                 <ul className="flex flex-row gap-3">
                   <PrismicNextLink field={slice.primary.github}>
-                    <span className="font-mono font-light text-sm outline-dotted outline-1 p-2 rounded-full text-zinc-400">
-                      Gh
-                    </span>
+                    <span className="prismic-link-icons">Gh</span>
                   </PrismicNextLink>
                   <PrismicNextLink field={slice.primary.linkedin}>
-                    <span className="font-mono font-light text-sm outline-dotted outline-1 p-2 rounded-full text-zinc-400">
-                      Li
-                    </span>
+                    <span className="prismic-link-icons">Li</span>
                   </PrismicNextLink>
                   <PrismicNextLink field={slice.primary.email}>
-                    <span className="font-mono font-light text-sm outline-dotted outline-1 p-2 rounded-full text-zinc-400">
-                      Email
-                    </span>
+                    <span className="prismic-link-icons">Email</span>
                   </PrismicNextLink>
                 </ul>
               </nav>
@@ -121,19 +106,19 @@ const Hero = ({ slice }: HeroProps): JSX.Element => {
             <ul className="hidden md:flex flex-col gap-2">
               <PrismicNextLink
                 field={slice.primary.github}
-                className="font-mono font-light text-xs text-zinc-400"
+                className="prismic-links"
               >
                 Github
               </PrismicNextLink>
               <PrismicNextLink
                 field={slice.primary.linkedin}
-                className="font-mono font-thin text-xs text-zinc-400"
+                className="prismic-links"
               >
                 LinkedIn
               </PrismicNextLink>
               <PrismicNextLink
                 field={slice.primary.email}
-                className="font-mono font-thin text-xs text-zinc-400"
+                className="prismic-links"
               >
                 Email
               </PrismicNextLink>

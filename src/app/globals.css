@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .prismic-link-icons {
+    @apply font-mono font-light text-sm outline-dotted outline-1 p-2 rounded-full text-zinc-400;
+  }
+
+  .prismic-links {
+    @apply font-mono font-light text-xs text-zinc-400;
+  }
+}
