@@ -17,6 +17,37 @@
 				"__TYPE__": "FieldContent",
 				"value": "wife",
 				"type": "Text"
+			},
+			"job_role": {
+				"__TYPE__": "FieldContent",
+				"value": "spin",
+				"type": "Text"
+			},
+			"location": {
+				"__TYPE__": "FieldContent",
+				"value": "repeat",
+				"type": "Text"
+			},
+			"github": {
+				"__TYPE__": "LinkContent",
+				"value": {
+					"__TYPE__": "ExternalLink",
+					"url": "http://google.com"
+				}
+			},
+			"linkedin": {
+				"__TYPE__": "LinkContent",
+				"value": {
+					"__TYPE__": "ExternalLink",
+					"url": "https://slicemachine.dev"
+				}
+			},
+			"email": {
+				"__TYPE__": "LinkContent",
+				"value": {
+					"__TYPE__": "ExternalLink",
+					"url": "https://prismic.io"
+				}
 			}
 		},
 		"items": []

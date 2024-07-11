@@ -104,6 +104,56 @@ export interface HeroSliceDefaultPrimary {
    * - **Documentation**: https://prismic.io/docs/field#key-text
    */
   tag_line: prismic.KeyTextField;
+
+  /**
+   * Job Role field in *Hero → Default → Primary*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: hero.default.primary.job_role
+   * - **Documentation**: https://prismic.io/docs/field#key-text
+   */
+  job_role: prismic.KeyTextField;
+
+  /**
+   * Location field in *Hero → Default → Primary*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: hero.default.primary.location
+   * - **Documentation**: https://prismic.io/docs/field#key-text
+   */
+  location: prismic.KeyTextField;
+
+  /**
+   * Github field in *Hero → Default → Primary*
+   *
+   * - **Field Type**: Link
+   * - **Placeholder**: *None*
+   * - **API ID Path**: hero.default.primary.github
+   * - **Documentation**: https://prismic.io/docs/field#link-content-relationship
+   */
+  github: prismic.LinkField;
+
+  /**
+   * LinkedIn field in *Hero → Default → Primary*
+   *
+   * - **Field Type**: Link
+   * - **Placeholder**: *None*
+   * - **API ID Path**: hero.default.primary.linkedin
+   * - **Documentation**: https://prismic.io/docs/field#link-content-relationship
+   */
+  linkedin: prismic.LinkField;
+
+  /**
+   * Email field in *Hero → Default → Primary*
+   *
+   * - **Field Type**: Link
+   * - **Placeholder**: *None*
+   * - **API ID Path**: hero.default.primary.email
+   * - **Documentation**: https://prismic.io/docs/field#link-content-relationship
+   */
+  email: prismic.LinkField;
 }
 
 /**
