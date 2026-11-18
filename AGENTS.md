@@ -1,9 +1,68 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Stu's portfolio
 
-## This is NOT the Next.js you know
+A personal developer portfolio for Stu, a full-stack developer (frontend-strong, product-minded) job-hunting in Copenhagen/Skåne. Its readers are tech leads and recruiters with about 60 seconds. It shows problem-first case studies of real client work, a blog, a Now page, a contact form and a CV. The site is itself a case study in agentic development, so its plans in `prompts/` are part of the portfolio.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## Commands
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+- Install: `npm install`
+- Dev: `npm run dev`
+- Build: `npm run build`
+- Lint: `npm run lint`
+- Type check: `npm run typecheck` (`tsc --noEmit`)
+- Unit tests: `npm test` (Vitest)
+- E2E + accessibility: `npm run test:e2e` (Playwright + axe)
 
-<!-- END:nextjs-agent-rules -->
+Scripts are added in plan 00. Until then, only the first four exist.
+
+## Platform
+
+- Next.js App Router, TypeScript strict, Tailwind CSS v4. For any framework or library API, read the docs for the installed major version, not memory. Version pins live in `CLAUDE.md`.
+- Routes in `src/app/`. Shared components in `src/components/`. Pure logic (parsing, validation, data shaping) in `src/lib/`, written so Vitest can test it without a browser.
+- Styles: `src/styles/tokens.css` imported by `src/app/globals.css`. No other global CSS.
+- Never edit `.next/`, `node_modules/` or generated files.
+
+## Who owns what
+
+- **Hosting:** Vercel (Hobby, personal use only). No other host.
+- **Styling:** Tailwind v4 and `tokens.css`. No CSS-in-JS, no component libraries, no animation libraries.
+- **Fonts:** Archivo (variable, width and weight axes) and IBM Plex Mono, both via `next/font/google`. No other families.
+- **Content:** MDX in the repo with typed collections for case studies, blog and Now. The collections tool is chosen in plan 03. No CMS.
+- **Contact email:** Resend, called from a server action. Validation with Zod, shared by client and server. Added in plan 06.
+- **Analytics and AI:** none in v1.
+
+Ask before moving a responsibility between tools or adding a new one.
+
+## Design system
+
+- Tokens: `src/styles/tokens.css`. No raw colour, spacing, radius or font values anywhere else.
+- Rules and components: `docs/design-system.md`. Read it for any plan that touches UI.
+- **Must** rules are fixed: raise a concern in the plan, never change one silently. **Suggested** approaches may be replaced by a better proposal in the Ask step.
+- Themes are set by route: the homepage is `data-theme="dark"`, every other page is light. No toggle, no `prefers-color-scheme` switching.
+
+## Rules
+
+- Secrets live in `.env.local` only. Never commit, print or log them. `.env.example` lists names, never values.
+- Ask before: adding a dependency, adding a service, changing a schema or content collection shape, deleting files, or changing any rule in this file.
+- Don't build ahead. Future roadmap items may shape interfaces and leave seams, but no code for a feature outside the current approved plan.
+- Never delete, skip or weaken a test to make it pass. If a test fails and the fix isn't clear, stop and report.
+- Any change to a test file is listed in the report.
+- This file: replace, don't append. Propose changes to rules; never edit them silently.
+
+## Checks
+
+- **Before a plan is `built`:** typecheck, lint and unit tests pass (enforced by the Stop hook).
+- **Before a plan closes:** e2e and axe pass; for UI work, Playwright screenshots at 375, 768 and 1440px, compared against the plan's design reference, with differences listed.
+- **From plan 08:** Lighthouse CI budgets pass.
+
+## Git
+
+- One branch per plan: `feat/NN-name` (e.g. `feat/04-project-index`).
+- One commit per plan step, made after that step's check passes. Conventional commit messages.
+- A finished plan becomes a PR: the diff plus the report is Stu's sign-off point.
+- Never push, merge or force anything unless Stu asks.
+
+## Workflow
+
+- Feature work follows `/feature`; finishing follows `/close-out`. Small fixes (one file, no new behaviour, no dependency) skip the plan.
+- The roadmap is `ROADMAP.md`. Read it only when planning, never during a build.
+- Plans live in `prompts/NN-name.md`, copied from `prompts/TEMPLATE.md`.
