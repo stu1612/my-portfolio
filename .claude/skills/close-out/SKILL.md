@@ -16,6 +16,7 @@ Plan: $ARGUMENTS
 8. In chat, give the PR title and description (summary, the Result section, screenshot differences, pending checks), targeting `dev`. Then ask for verification with a **Your turn** block:
 
    > **Your turn — verify plan NN**
+   >
    > 1. Do these checks yourself: <the Verification → Stu items>.
    > 2. On the branch, set `Status: verified` in `prompts/NN-name.md`, tick plan NN in `ROADMAP.md`, and commit both (so nothing is committed on `dev` directly).
    > 3. `git push -u origin feat/NN-name`, then open the PR to `dev` (e.g. `gh pr create --base dev`) with the text above.

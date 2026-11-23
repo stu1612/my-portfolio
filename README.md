@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stu's portfolio
 
-## Getting Started
+A personal developer portfolio for Stu, a full-stack developer in Copenhagen / Skåne. It has problem-first case studies of real client work, a blog, a Now page, a contact form and a CV. The site is also a case study in agentic development: the plans it was built from are in [`prompts/`](prompts/).
 
-First, run the development server:
+Built with Next.js (App Router), TypeScript, Tailwind CSS v4 and MDX. Hosted on Vercel.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Commands
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Command               | What it does                                                         |
+| --------------------- | -------------------------------------------------------------------- |
+| `npm install`         | Install dependencies (Node 22.12 or newer)                           |
+| `npm run dev`         | Start the dev server on port 3000                                    |
+| `npm run build`       | Production build                                                     |
+| `npm run lint`        | ESLint                                                               |
+| `npm run typecheck`   | Generate route types, then `tsc --noEmit`                            |
+| `npm test`            | Unit tests (Vitest, single run); `npm run test:watch` for watch mode |
+| `npm run test:e2e`    | Playwright and axe against a production build on port 3100           |
+| `npm run screenshots` | Full-page screenshots at 375, 768 and 1440px into `test-results/`    |
+| `npm run format`      | Prettier                                                             |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Every route goes in [`e2e/routes.ts`](e2e/routes.ts) so it gets the smoke, accessibility and screenshot tests. Locally, Playwright uses your installed Chrome; CI uses its bundled Chromium.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Docs
 
-## Learn More
+- [`docs/workflow.md`](docs/workflow.md): how plans, branches and checks fit together
+- [`docs/design-system.md`](docs/design-system.md): design rules; values live in `src/styles/tokens.css`
+- [`ROADMAP.md`](ROADMAP.md): what is planned and in what order
 
-To learn more about Next.js, take a look at the following resources:
+## Deploying
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The repo is connected to Vercel through its Git import. `main` is the production branch; pushes to `dev` and `feat/*` branches get preview URLs. There is no `vercel.json` and no CLI step. `dev` is the integration branch and only changes by pull request.
