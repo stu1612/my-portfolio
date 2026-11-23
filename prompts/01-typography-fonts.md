@@ -108,4 +108,31 @@ None. If the spike shows the width axis is much too heavy, I'll propose a change
 
 ## Result
 
-Filled at close-out: what changed from the plan and why, test files changed (if any), and checks still pending for Stu.
+**Built as planned.** Archivo (variable, `wdth` + `wght`) and IBM Plex Mono (400, 500) load through `next/font` in `layout.tsx`. `--font-sans` and `--font-mono` in `tokens.css` point at them through `@theme inline`. Every role in the type scale has a weight, and meta also has tracking. Three small utilities cover the rest: `type-display-index`, `type-meta` and `type-heading`.
+
+**Spike:** the width axis works (`font-stretch: 62% 125%` in the built CSS). A 64px "Stu" at weight 900 measured 77 / 117 / 142px at 62 / 100 / 125%. Latin woff2 sizes: Archivo about 90 KB, Plex Mono about 10 KB per weight.
+
+**Deviations from the plan**
+
+- The built CSS also declares Archivo's latin-ext and vietnamese files. They use `unicode-range`, so they only download if a page uses those characters. Decision 3 assumed they would be left out entirely.
+- Added `parseTypeScale` to `src/lib/tokens.ts` for the new scale test. It was not in the plan's file list.
+- The last step dropped the dark-theme, 125% index caps and width-axis browser checks, because they needed the specimen route. They were verified on the specimen (step 3) and by the spike.
+
+**Findings for later plans (nothing changed here)**
+
+- `type-display-index` at its 3rem minimum makes `PORTFOLIO` 369px wide. The container is 327px at 375px and 272px at 320px, so it overflows and the page scrolls sideways below about 414px. This breaks the Must rule that the longest row fits one line at every width. Plan 04 needs a smaller minimum (about 2.1rem fits 320px) or another approach. It fits at 768px (531px of 720px) and 1440px (922px of 1392px).
+- `display-hero` is a fixed 5rem. "Stu Bolderson" wraps and "Bolderson" is 414px wide, so it overflows at 375px. Plan 02 or 07 needs a responsive size for it.
+
+**Test files changed**
+
+- `e2e/typography.spec.ts`: new. Computed-style and font-loaded checks on the placeholder page.
+- `src/lib/type-scale.test.ts`: new. Checks every role has a size, line height and weight. Confirmed it fails when a weight is removed.
+- `e2e/routes.ts`: `/type-specimen` added in step 3 and removed in step 4. No net change.
+- No existing test was deleted, skipped or weakened.
+
+**Checks run at close-out:** typecheck, lint, 45 unit tests, 6 e2e tests including axe: all pass. Screenshots of `/` at 375, 768 and 1440px: Archivo heading and body, Plex Mono uppercase label, no overflow. There is no design image, so they were compared with the Must rules in `docs/design-system.md`, with no differences. Lighthouse CI starts at plan 08.
+
+**Pending for Stu**
+
+- Look at the placeholder in a real browser (dev server or Vercel preview). Archivo should clearly not be the system font, the Plex Mono line should read as a label, and nothing should jump on load.
+- Decide whether the 125% index caps feel right. The only evidence is the specimen screenshots from step 3, which were cleared, so check this at plan 04 on the real homepage.
