@@ -143,7 +143,9 @@ test("the footer is the copyright line only", async ({ page }) => {
 
 test.describe("top bar", () => {
   const menuButton = (page: Page) =>
-    page.locator("header:visible").getByRole("button", { name: "Menu" });
+    page
+      .locator("header:visible")
+      .getByRole("button", { name: "Menu", exact: true });
 
   test("shows the name and the live Lund time at 1440px", async ({ page }) => {
     // 13:05 UTC in January is 14:05 in Lund.
@@ -260,5 +262,178 @@ test.describe("top bar", () => {
 
     expect(resting).not.toEqual(hovered);
     expect(focused).toEqual(hovered);
+  });
+});
+
+test.describe("full-screen menu", () => {
+  const header = (page: Page) => page.locator("header:visible");
+  const menuButton = (page: Page) =>
+    header(page).getByRole("button", { name: "Menu", exact: true });
+  const dialog = (page: Page) => page.getByRole("dialog", { name: "Menu" });
+
+  for (const route of ["/", "/about"]) {
+    for (const width of widths) {
+      test(`covers the viewport on ${route} at ${width}px`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await page.goto(route);
+        await menuButton(page).click();
+        await expect(dialog(page)).toBeVisible();
+        await expect(page.locator("dialog[open]")).toHaveCount(1);
+        const box = await dialog(page).boundingBox();
+        expect(box).toEqual({ x: 0, y: 0, width, height: 800 });
+      });
+    }
+  }
+
+  test("follows the page theme", async ({ page }) => {
+    await page.goto("/");
+    await menuButton(page).click();
+    expect(
+      await dialog(page).evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(DARK_SURFACE);
+
+    await page.goto("/about");
+    await menuButton(page).click();
+    expect(
+      await dialog(page).evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(LIGHT_SURFACE);
+  });
+
+  test("lists the five links, follow links, email and status", async ({
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date("2026-07-15T13:05:00Z"));
+    await page.goto("/blog");
+    await menuButton(page).click();
+    const menu = dialog(page);
+
+    const nav = menu.getByRole("navigation", { name: "Primary" });
+    await expect(nav.getByRole("link")).toHaveText([
+      "Index",
+      "About",
+      "Blog",
+      "Now",
+      "Contact",
+    ]);
+    await expect(nav.locator('[aria-current="page"]')).toHaveText(["Blog"]);
+
+    const github = menu.getByRole("link", { name: /GitHub/ });
+    await expect(github).toHaveAttribute("href", "https://github.com/stu1612");
+    await expect(github).toHaveAttribute("target", "_blank");
+    await expect(github).toHaveAttribute("rel", "noopener noreferrer");
+    const linkedin = menu.getByRole("link", { name: /LinkedIn/ });
+    await expect(linkedin).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/stuartbolderson/",
+    );
+    await expect(linkedin).toHaveAttribute("rel", "noopener noreferrer");
+    await expect(
+      menu.getByRole("link", { name: "boldersonstu@gmail.com" }),
+    ).toHaveAttribute("href", "mailto:boldersonstu@gmail.com");
+
+    await expect(menu.getByTestId("availability")).toHaveText(
+      "Lund 15:05 · Open to work",
+    );
+  });
+
+  test("aria-expanded follows the state; Escape closes and returns focus", async ({
+    page,
+  }) => {
+    await page.goto("/about");
+    const button = menuButton(page);
+    await expect(button).toHaveAttribute("aria-expanded", "false");
+    await button.click();
+    await expect(button).toHaveAttribute("aria-expanded", "true");
+    await expect(dialog(page)).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog(page)).toBeHidden();
+    await expect(button).toHaveAttribute("aria-expanded", "false");
+    await expect(button).toBeFocused();
+  });
+
+  test("the close button closes it", async ({ page }) => {
+    await page.goto("/about");
+    await menuButton(page).click();
+    await dialog(page).getByRole("button", { name: "Close menu" }).click();
+    await expect(dialog(page)).toBeHidden();
+    await expect(menuButton(page)).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("keyboard focus never reaches the page behind", async ({ page }) => {
+    await page.goto("/about");
+    await menuButton(page).click();
+    await expect(dialog(page)).toBeVisible();
+
+    const focusIsInsideOrChrome = () =>
+      page.evaluate(() => {
+        const active = document.activeElement;
+        // body/null means focus moved to the browser UI, which is allowed.
+        if (!active || active === document.body) return true;
+        return !!active.closest("dialog[open]");
+      });
+
+    for (let i = 0; i < 15; i++) {
+      await page.keyboard.press("Tab");
+      expect(await focusIsInsideOrChrome(), `Tab ${i + 1}`).toBe(true);
+    }
+    for (let i = 0; i < 15; i++) {
+      await page.keyboard.press("Shift+Tab");
+      expect(await focusIsInsideOrChrome(), `Shift+Tab ${i + 1}`).toBe(true);
+    }
+  });
+
+  test("choosing a link navigates and closes the menu", async ({ page }) => {
+    await page.goto("/");
+    await menuButton(page).click();
+    await dialog(page).getByRole("link", { name: "About" }).click();
+    await expect(page).toHaveURL("/about");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("About");
+    await expect(page.locator("dialog[open]")).toHaveCount(0);
+    expect(await shellBackground(page)).toBe(LIGHT_SURFACE);
+  });
+
+  test("the page behind doesn't scroll while it is open", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 600 });
+    await page.goto("/about");
+    await main(page).evaluate((el) => {
+      const filler = document.createElement("div");
+      filler.style.minHeight = "3000px";
+      el.appendChild(filler);
+    });
+    await menuButton(page).click();
+    expect(
+      await page.evaluate(() => getComputedStyle(document.body).overflow),
+    ).toBe("hidden");
+    await page.mouse.wheel(0, 1000);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  });
+
+  test("fades with reduced motion off, and is instant with it on", async ({
+    page,
+  }) => {
+    await page.goto("/about");
+    await menuButton(page).click();
+    const duration = () =>
+      dialog(page).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          property: s.transitionProperty,
+          duration: s.transitionDuration,
+        };
+      });
+    const fading = await duration();
+    expect(fading.property).toContain("opacity");
+    expect(fading.duration).toContain("0.2s");
+
+    // Instant: either no transitioned property or a zero duration.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const reduced = await duration();
+    expect(
+      reduced.property === "none" || /^0s(, 0s)*$/.test(reduced.duration),
+      JSON.stringify(reduced),
+    ).toBe(true);
   });
 });
