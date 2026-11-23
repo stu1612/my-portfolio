@@ -31,6 +31,8 @@ For Stu, answered before approval:
 
 ## Implementation notes
 
+Model: Sonnet | Opus | Haiku — one-line reason. <!-- The agent recommends; Stu switches with /model before the build. -->
+
 The agent's own choices: file names, APIs, techniques, fallbacks ("if X isn't available in the installed version, use Y"). Detailed enough for a fresh session to build from AGENTS.md plus this plan. Stu skims this.
 
 ## Out of scope
