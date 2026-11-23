@@ -140,3 +140,125 @@ test("the footer is the copyright line only", async ({ page }) => {
   await expect(footer).toHaveText("© 2026 Stu Bolderson");
   await expect(footer.getByRole("link")).toHaveCount(0);
 });
+
+test.describe("top bar", () => {
+  const menuButton = (page: Page) =>
+    page.locator("header:visible").getByRole("button", { name: "Menu" });
+
+  test("shows the name and the live Lund time at 1440px", async ({ page }) => {
+    // 13:05 UTC in January is 14:05 in Lund.
+    await page.clock.setFixedTime(new Date("2026-01-15T13:05:00Z"));
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/about");
+
+    const header = page.locator("header:visible");
+    await expect(
+      header.getByRole("link", { name: "Stu Bolderson" }),
+    ).toBeVisible();
+    const status = header.getByTestId("availability");
+    await expect(status).toBeVisible();
+    await expect(status).toHaveText("Lund 14:05 · Open to work");
+    // Shown uppercase, as the meta style requires.
+    expect(await status.evaluate((el) => (el as HTMLElement).innerText)).toBe(
+      "LUND 14:05 · OPEN TO WORK",
+    );
+  });
+
+  test("the clock ticks over on the minute", async ({ page }) => {
+    await page.clock.install({ time: new Date("2026-01-15T13:05:30Z") });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/about");
+    const status = page.locator("header:visible").getByTestId("availability");
+    await expect(status).toContainText("14:05");
+    await page.clock.runFor(31_000);
+    await expect(status).toContainText("14:06");
+  });
+
+  test("the status is hidden at 375px", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto("/");
+    await expect(
+      page.locator("header:visible").getByTestId("availability"),
+    ).toBeHidden();
+    await expect(menuButton(page)).toBeVisible();
+  });
+
+  for (const width of widths) {
+    test(`no horizontal scroll at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      for (const route of ["/", ...lightRoutes]) {
+        await page.goto(route);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth,
+        );
+        expect(overflow, route).toBeLessThanOrEqual(0);
+      }
+    });
+  }
+
+  test("Tab reaches the skip link first, and it moves focus to <main>", async ({
+    page,
+  }) => {
+    await page.goto("/about");
+    await page.keyboard.press("Tab");
+    const skip = page.getByRole("link", { name: "Skip to content" });
+    await expect(skip).toBeFocused();
+    await expect(skip).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(main(page)).toBeFocused();
+  });
+
+  test("the menu button shows the focus ring on keyboard focus", async ({
+    page,
+  }) => {
+    await page.goto("/about");
+    const button = menuButton(page);
+    await page.keyboard.press("Tab"); // skip link
+    await page.keyboard.press("Tab"); // name
+    await page.keyboard.press("Tab"); // menu button
+    await expect(button).toBeFocused();
+    const ring = await button.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        style: s.outlineStyle,
+        width: s.outlineWidth,
+        offset: s.outlineOffset,
+        color: s.outlineColor,
+      };
+    });
+    // tokens.css: light --accent is #a8431f.
+    expect(ring).toEqual({
+      style: "solid",
+      width: "2px",
+      offset: "3px",
+      color: "rgb(168, 67, 31)",
+    });
+  });
+
+  test("hover and keyboard focus give the menu lines the same scale", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" }); // no transition to wait for
+    await page.goto("/about");
+    const button = menuButton(page);
+    const scales = () =>
+      button
+        .locator("[data-line]")
+        .evaluateAll((lines) => lines.map((l) => getComputedStyle(l).scale));
+
+    const resting = await scales();
+    await button.hover();
+    const hovered = await scales();
+    await page.mouse.move(0, 400);
+    expect(await scales()).toEqual(resting);
+
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await expect(button).toBeFocused();
+    const focused = await scales();
+
+    expect(resting).not.toEqual(hovered);
+    expect(focused).toEqual(hovered);
+  });
+});
