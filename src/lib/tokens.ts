@@ -32,3 +32,14 @@ export function parseTokenThemes(css: string): TokenThemes {
   };
   return { light, dark };
 }
+
+/** Type scale roles from the @theme blocks, with the keys each role defines. */
+export function parseTypeScale(css: string): Record<string, string[]> {
+  const roles: Record<string, string[]> = {};
+  for (const [, role, key] of css.matchAll(
+    /--text-([a-z0-9-]+?)(--[a-z-]+)?\s*:/g,
+  )) {
+    (roles[role] ??= []).push(key ? key.slice(2) : "size");
+  }
+  return roles;
+}
