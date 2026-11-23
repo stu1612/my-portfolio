@@ -15,7 +15,11 @@
       "Bash(git commit:*)",
       "Bash(git branch:*)",
       "Bash(git switch:*)",
-      "Bash(git checkout -b:*)"
+      "Bash(git checkout -b:*)",
+      "Bash(npm run screenshots)",
+      "Bash(npm run format)",
+      "Bash(npm run format:check)",
+      "Bash(npx playwright install:*)"
     ],
     "deny": [
       "Bash(git push:*)",
