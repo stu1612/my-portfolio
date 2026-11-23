@@ -437,3 +437,88 @@ test.describe("full-screen menu", () => {
     ).toBe(true);
   });
 });
+
+test.describe("page transitions", () => {
+  test("a client navigation starts a view transition", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      const w = window as unknown as { __viewTransitions: number };
+      w.__viewTransitions = 0;
+      const original = document.startViewTransition.bind(document);
+      document.startViewTransition = ((
+        ...args: Parameters<typeof document.startViewTransition>
+      ) => {
+        w.__viewTransitions++;
+        return original(...args);
+      }) as typeof document.startViewTransition;
+    });
+
+    await page
+      .locator("header:visible")
+      .getByRole("button", { name: "Menu", exact: true })
+      .click();
+    await page.getByRole("dialog").getByRole("link", { name: "About" }).click();
+    await expect(page).toHaveURL("/about");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("About");
+
+    expect(
+      await page.evaluate(
+        () =>
+          (window as unknown as { __viewTransitions: number })
+            .__viewTransitions,
+      ),
+    ).toBeGreaterThan(0);
+  });
+
+  test("the cross-fade is opacity only and has a reduced-motion override", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const rules = await page.evaluate(() => {
+      const found: string[] = [];
+      const walk = (list: CSSRuleList, media = "") => {
+        for (const rule of Array.from(list)) {
+          if (rule instanceof CSSMediaRule) {
+            walk(rule.cssRules, rule.conditionText);
+          } else if (
+            rule instanceof CSSStyleRule &&
+            rule.selectorText.includes("::view-transition")
+          ) {
+            found.push(
+              `${media}|${rule.selectorText}|${rule.style.cssText}|name=${rule.style.animationName}`,
+            );
+          }
+        }
+      };
+      for (const sheet of Array.from(document.styleSheets)) {
+        try {
+          walk(sheet.cssRules);
+        } catch {
+          // cross-origin sheet: not ours
+        }
+      }
+      return found;
+    });
+
+    // The group's size/position morph is off.
+    expect(
+      rules.some(
+        (r) =>
+          r.startsWith("|") &&
+          // Chrome serialises the selector as (*.page-fade).
+          r.includes("::view-transition-group(") &&
+          r.includes(".page-fade)") &&
+          r.endsWith("|name=none"),
+      ),
+    ).toBe(true);
+    // Reduced motion makes every part instant.
+    expect(
+      rules.some(
+        (r) =>
+          r.startsWith("(prefers-reduced-motion: reduce)") &&
+          r.includes("::view-transition-new(*)") &&
+          r.includes("animation-duration: 0s"),
+      ),
+    ).toBe(true);
+  });
+});
