@@ -16,7 +16,7 @@ Scripts are added in plan 00. Until then, only the first four exist.
 
 ## Platform
 
-- Next.js App Router, TypeScript strict, Tailwind CSS v4. For any framework or library API, read the docs for the installed major version, not memory. Version pins live in `CLAUDE.md`.
+- Next.js App Router, TypeScript strict, Tailwind CSS v4. For any framework or library API, read the docs for the installed major version, not memory. Exact versions are pinned in `package.json`.
 - Routes in `src/app/`. Shared components in `src/components/`. Pure logic (parsing, validation, data shaping) in `src/lib/`, written so Vitest can test it without a browser.
 - Styles: `src/styles/tokens.css` imported by `src/app/globals.css`. No other global CSS.
 - Never edit `.next/`, `node_modules/` or generated files.
@@ -56,7 +56,10 @@ Ask before moving a responsibility between tools or adding a new one.
 
 ## Git
 
-- One branch per plan: `feat/NN-name` (e.g. `feat/04-project-index`).
+- `dev` is the integration branch. `main` only changes when Stu merges `dev` into it.
+- One branch per approved plan: `feat/NN-name` (e.g. `feat/04-project-index`), always cut from `dev`, never from `main`. Its PR targets `dev`.
+- No app code (`src/`) edits and no commits directly on `main` or `dev` (enforced by the guard hooks). Plans may be drafted on `dev`.
+- Never create fix/ or chore/ branches; ask Stu whether work is a small fix.
 - One commit per plan step, made after that step's check passes. Conventional commit messages.
 - A finished plan becomes a PR: the diff plus the report is Stu's sign-off point.
 - Never push, merge or force anything unless Stu asks.
