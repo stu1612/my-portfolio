@@ -241,4 +241,30 @@ For **Checks**, if decision 6 is yes:
 
 ## Result
 
-Filled at close-out: what changed from the plan and why, test files changed (if any), and checks still pending for Stu.
+All steps built and committed; typecheck, lint, unit tests (34), format check and a clean production build pass. At close-out, `npm run test:e2e` (smoke and axe on `/`) passed, and screenshots at 375 / 768 / 1440px passed in normal and reduced-motion runs.
+
+**Changed from the plan, and why**
+
+- **Local browser:** Playwright 1.65 cannot install its bundled Chromium on macOS 12. `playwright.config.ts` uses the installed Chrome (`channel: "chrome"`) locally and bundled Chromium when `CI` is set. Still Chromium-only, as decision 7 says. `npx playwright install` is not needed locally; the CI workflow installs Chromium itself.
+- **`@types/node` 22:** added to the install, because Vitest 5 would not resolve against `^20` (reflected in decision 1).
+- **Dependencies committed in step 2, not step 3:** `package.json` and the lockfile changed together with the new scripts.
+- **`vitest.config.mts`, not `.ts`:** avoids a Vite warning about ESM in a CommonJS package.
+- **Screenshot names:** `home-<width>.png` (plus `-reduced`), not `/-<width>.png`. Each run clears `test-results/`, so the normal and reduced-motion sets don't coexist.
+- **Clean-`.next` typecheck proof skipped:** the `rm` was denied. Typecheck passed with an existing `.next`, and `next typegen` ran each time.
+- **Corrupted Turbopack cache:** a leftover stray folder `node_modules/@types/node 2` broke the first build, and a corrupted `.next/cache` broke the e2e build later. Stu removed both. Likely cause: `next dev` running while Playwright's web server built. Stop `next dev` before `npm run test:e2e`.
+- **Prettier formatted** three skill files and `docs/workflow.md` in step 2 (the planned one-off pass).
+
+**Test files**
+
+- Added: `src/lib/contrast.test.ts`, `src/lib/tokens.test.ts`, `e2e/smoke.spec.ts`, `e2e/a11y.spec.ts`, `e2e/screenshots.spec.ts`.
+- Existing tests changed, skipped or weakened: none.
+
+**Screenshot differences from the placeholder spec**
+
+- None. At 1440px the text stays at the left edge with no max-width. Intended for a placeholder; plan 02's layout shell sets the real container.
+
+**Pending for Stu**
+
+- Import the repo in Vercel with production branch `main`; confirm `dev` gets a preview URL.
+- After merging `dev` into `main`, open the production URL on your phone.
+- Confirm the PR to `dev` shows green CI checks. The workflow has not run on GitHub yet.
