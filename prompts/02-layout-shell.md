@@ -1,6 +1,6 @@
 # 02 · Layout shell
 
-Status: approved
+Status: built
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
