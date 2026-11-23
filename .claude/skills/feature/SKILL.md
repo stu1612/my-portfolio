@@ -19,6 +19,7 @@ If the input is only a plan number (e.g. `04`), go to **Build**. Otherwise go to
 7. In chat, list the **Decisions for you** with your recommendation first, plus anything in **What I need to understand**, and the recommended model. Then stop and ask for approval with a **Your turn** block:
 
    > **Your turn — approve plan NN**
+   >
    > 1. Review `prompts/NN-name.md` and answer the decisions above (reply here if you want changes).
    > 2. Set `Status: approved` in the plan.
    > 3. Run `/model <recommended>` then `/feature NN`.

@@ -8,14 +8,14 @@ How Stu and the agent build this site. If you've been away, run `/start` first: 
 /start  →  /feature <description>  →  you approve  →  /feature NN  →  /close-out NN  →  you verify  →  /start
 ```
 
-| Step | Who | What you type or do | What happens |
-|---|---|---|---|
-| 1. Orient | You | `/start` | Agent reports where the project is, what's next, and the exact commands. |
-| 2. Plan | You → agent | `/feature <what you want>` on `dev` | Agent writes `prompts/NN-name.md` as `draft`, lists decisions, recommends a model. Writes no app code. |
-| 3. Approve | **You** | Review the plan, answer decisions, set `Status: approved` | Unlocks app code for that plan (the plan-gate hook checks this line). |
-| 4. Build | You → agent | `/model <recommended>`, then `/feature NN` | Agent cuts `feat/NN-name` from `dev`, builds step by step with a commit per step, ends at `built`. Run `/feature NN` again to resume an interrupted build. |
-| 5. Close out | You → agent | `/close-out NN` | Agent runs e2e, axe and screenshots, fills the plan's Result, drafts the PR text. |
-| 6. Verify | **You** | Your checks, set `Status: verified`, tick `ROADMAP.md`, push, PR to `dev`, merge | The plan is done. |
+| Step         | Who         | What you type or do                                                              | What happens                                                                                                                                               |
+| ------------ | ----------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Orient    | You         | `/start`                                                                         | Agent reports where the project is, what's next, and the exact commands.                                                                                   |
+| 2. Plan      | You → agent | `/feature <what you want>` on `dev`                                              | Agent writes `prompts/NN-name.md` as `draft`, lists decisions, recommends a model. Writes no app code.                                                     |
+| 3. Approve   | **You**     | Review the plan, answer decisions, set `Status: approved`                        | Unlocks app code for that plan (the plan-gate hook checks this line).                                                                                      |
+| 4. Build     | You → agent | `/model <recommended>`, then `/feature NN`                                       | Agent cuts `feat/NN-name` from `dev`, builds step by step with a commit per step, ends at `built`. Run `/feature NN` again to resume an interrupted build. |
+| 5. Close out | You → agent | `/close-out NN`                                                                  | Agent runs e2e, axe and screenshots, fills the plan's Result, drafts the PR text.                                                                          |
+| 6. Verify    | **You**     | Your checks, set `Status: verified`, tick `ROADMAP.md`, push, PR to `dev`, merge | The plan is done.                                                                                                                                          |
 
 The agent always ends a step with a **Your turn** block when it needs you. Only you set `approved` and `verified`.
 
