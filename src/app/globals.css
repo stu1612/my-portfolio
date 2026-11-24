@@ -1,2 +1,32 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
+
+/* The page behind the full-screen menu doesn't scroll while it is open. */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* Page transitions: <ViewTransition default="page-fade"> in the root layout.
+   Opacity only: the browser's default fade-in/out on the old and new
+   snapshots. The group's size and position morph is switched off, so
+   nothing but opacity animates. */
+::view-transition-group(.page-fade) {
+  animation: none;
+}
+
+::view-transition-old(.page-fade),
+::view-transition-new(.page-fade),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-out-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

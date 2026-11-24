@@ -34,13 +34,37 @@ Read this for any plan that touches UI. Tokens live in `src/styles/tokens.css`.
 
 ### Navbar
 
-Name left, links centre (Index, About, Notes, Contact), status right.
+A slim top bar: name left, status, then a menu button right. A hairline sits under the bar. The links live in the Menu, not the bar.
 
-- **Must:** all text mono `meta` style, uppercase. Current page uses `accent` and `aria-current="page"`.
-- **Must:** status shows the availability dot plus "LUND HH:MM · OPEN TO WORK", time in Europe/Stockholm.
+- **Must:** all text mono `meta` style, uppercase.
+- **Must:** status shows the availability dot plus "LUND HH:MM · OPEN TO WORK", time in Europe/Stockholm. The words carry the meaning, not the dot's colour.
 - **Must:** works on both themes using tokens only.
-- **Must:** all four links stay visible on mobile; no hamburger.
-- **Suggested:** availability text read from site config; link hover as an underline growing from the left; status hidden under 720px.
+- **Must:** the menu button is a three-line icon of unequal lengths with an accessible name, `aria-expanded` and `aria-controls`. Hover and `:focus-visible` look identical: the lines extend to equal length (`transform` only). No dot on hover; `radius-full` stays for the availability dot.
+- **Suggested:** availability text read from site config; status shown in the bar from 720px up, and always inside the Menu.
+
+### Menu
+
+A full-viewport overlay opened from the navbar. It holds the links and contact details.
+
+- **Must:** covers the whole viewport (`100dvw` by `100dvh`), is a native `<dialog>` opened with `showModal()` (focus trap, Escape, inert background, focus returns to the button), and is opaque.
+- **Must:** follows the page theme: dark over the homepage, light elsewhere. It never forces its own theme.
+- **Must:** its top bar repeats the name left and puts the close button where the menu button was, so nothing jumps.
+- **Must:** links are Index, About, Blog, Now, Contact, in the `h1` role. The current page uses `accent` and `aria-current="page"`. Choosing a link closes the menu.
+- **Must:** below the links, small groups labelled in `meta` style, `ink-muted`: FOLLOW (GitHub, LinkedIn) and CONTACT (email, location, live status).
+- **Must:** only `opacity` fades; the page behind does not scroll while the menu is open; reduced motion is instant.
+- **Suggested:** links in two columns from 720px up, one column below; the content scrolls inside the menu if it doesn't fit.
+
+### Footer
+
+Copyright only: `© 2026 Stu Bolderson`.
+
+- **Must:** mono `meta` style, `ink-muted`, under a hairline top border. No links; they live in the Menu.
+- **Must:** on the homepage the footer is pinned at the bottom of the frame.
+
+### Page frame
+
+- **Must:** the homepage is a fixed `100dvh` frame. The bar and footer stay pinned, and only `<main>` scrolls (`min-h-0 overflow-y-auto`).
+- **Must:** every other page scrolls the document normally, with the footer after the content.
 
 ### ProjectIndex (homepage)
 
@@ -66,4 +90,4 @@ Three variants: Decision, What went wrong, AI note.
 
 ## Not yet designed
 
-Case study header, MDX prose, code block, form fields, figure with caption, footer, 404. For these, propose two or three options within the foundations above in the plan's Ask step, with a recommendation. Do not build one without approval.
+Case study header, MDX prose, code block, form fields, figure with caption, 404. For these, propose two or three options within the foundations above in the plan's Ask step, with a recommendation. Do not build one without approval.

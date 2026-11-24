@@ -18,5 +18,19 @@ for (const route of routes) {
         fullPage: true,
       });
     });
+
+    test(`screenshot: ${route} at ${width}px, menu open`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      await page
+        .locator("header:visible")
+        .getByRole("button", { name: "Menu", exact: true })
+        .click();
+      // Let the 200ms fade finish (instant under reduced motion).
+      await page.waitForTimeout(400);
+      await page.screenshot({
+        path: `test-results/screenshots/${slug}-${width}-menu${reducedMotion ? "-reduced" : ""}.png`,
+      });
+    });
   }
 }

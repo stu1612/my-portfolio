@@ -101,6 +101,8 @@
 
   /* Motion */
   --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
+  --duration-link: 150ms; /* links, buttons, focus */
+  --duration-page: 200ms; /* menu fade, page cross-fade */
 }
 
 /* Roles that need more than size, weight and tracking. */
@@ -122,6 +124,14 @@
   font-weight: var(--text-meta--font-weight);
   letter-spacing: var(--text-meta--letter-spacing);
   text-transform: uppercase;
+}
+
+/* Focus ring (Must): 2px accent outline, 3px offset, keyboard focus only. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
 }
 
 /* Headings balance their line breaks (Suggested rule). */
