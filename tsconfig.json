@@ -19,10 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "content-collections": ["./.content-collections/generated"]
     }
   },
   "include": [
+    "content-collections.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

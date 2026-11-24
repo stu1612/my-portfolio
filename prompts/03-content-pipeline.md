@@ -19,7 +19,7 @@ Content pipeline: one MDX system with typed collections for case studies, blog a
 
 ## Decisions for you
 
-1. **Collections tool. Recommended: Content Collections** (`@content-collections/core` 0.15, `/next` 0.2, `/mdx` 0.2) with Zod schemas. It reads `content/**/*.mdx`, validates frontmatter, compiles MDX at build time, and generates typed arrays (`allPosts`). It supports Next 16 and works with Turbopack because it hooks in at config load, not through a bundler loader. Alternatives:
+1. **Collections tool. Recommended: Content Collections** (`@content-collections/core` 0.15, `/next` 0.2) with Zod schemas, and `@mdx-js/mdx` 3.1.1 for the MDX compile. It reads `content/**/*.mdx`, validates frontmatter and generates typed arrays (`allPosts`); `@mdx-js/mdx` compiles the body at build time. **Decided: `@content-collections/mdx` is not used.** It pulls in `mdx-bundler`, `remark-mdx-frontmatter` and `toml`/`uuid`, which gave 5 unfixable `npm audit` findings (3 high, 2 moderate). It supports Next 16 and works with Turbopack because it hooks in at config load, not through a bundler loader. Alternatives:
    - **`@next/mdx` plus a hand-written loader:** it's first-party, and every `.mdx` file becomes a module. However, frontmatter has to be `export const meta`, you'd write the glob, validation and types yourself, and Turbopack only accepts remark/rehype plugins whose options can be serialised. It's more code to own for the same result.
    - **Velite:** similar to Content Collections, but it runs as a separate process next to `next dev` and renders MDX through `new Function`. The Next integration is weaker.
 2. **Zod now, not in plan 06. Recommended: yes**, add `zod` 4 in this plan. AGENTS.md already names Zod as the validator. Plan 06 reuses it for the contact form, and nothing changes owner.
@@ -36,7 +36,7 @@ Content pipeline: one MDX system with typed collections for case studies, blog a
 ## What I need to understand
 
 - **Content Collections**: a build step that turns files into typed data. Docs: https://www.content-collections.dev/docs and https://www.content-collections.dev/docs/adapter/next. MDX: https://www.content-collections.dev/docs/content/mdx
-- **Compile at build, render on the server:** `compileMDX` turns each body into a JavaScript string at build time. `<MDXContent code={…} components={…} />` turns that string into React on the server. No MDX compiler ships to the browser.
+- **Compile at build, render on the server:** `compile(body, { outputFormat: "function-body" })` from `@mdx-js/mdx` turns each body into a JavaScript string at build time. `run()` from `@mdx-js/mdx` turns that string into a React component on the server. No MDX compiler ships to the browser.
 - **Zod 4 / Standard Schema:** Content Collections accepts any Standard Schema library. Zod is the one AGENTS.md already names. https://zod.dev
 - **Cache Components and dynamic routes:** with `cacheComponents: true`, `generateStaticParams` must return at least one param, and `dynamicParams` is not allowed (https://nextjs.org/docs/messages/empty-generate-static-params). That's why this plan adds no `[slug]` route. A route with only draft content would fail the production build. Plans 05 and 07 must handle it (see AGENTS.md updates).
 - **Interview questions you should be able to answer:**
@@ -51,11 +51,11 @@ Model: Sonnet — typical setup work, but with a real unknown (Content Collectio
 
 **Files**
 
-- `content-collections.ts` (repo root): `defineCollection` for `caseStudies`, `posts` and `now`, plus `defineConfig`. Schemas are imported from `src/lib/content/schemas.ts` by relative path, so Vitest can test them without the generator. Each `transform` calls `compileMDX(context, document)` and adds the computed fields through pure helpers.
+- `content-collections.ts` (repo root): `defineCollection` for `caseStudies`, `posts` and `now`, plus `defineConfig`. Schemas are imported from `src/lib/content/schemas.ts` by relative path, so Vitest can test them without the generator. Each `transform` calls `compile` from `@mdx-js/mdx` (function-body output, `remarkGfm` not included until plan 05 asks for it) on the document body and adds the computed fields through pure helpers.
 - `src/lib/content/schemas.ts`: Zod schemas (frontmatter only) and exported inferred types.
 - `src/lib/content/derive.ts`: pure helpers: `slugFromPath`, `urlFor(collection, slug)`, `readingMinutes(text)`, `isPublished(entry, isProduction)`, `sortPosts` (newest `published` first), `sortCaseStudies` (`order` ascending), `assertSingle(items, name)` (for Now).
 - `src/lib/content/index.ts`: the only module that imports `content-collections`. It exports `getCaseStudies()`, `getCaseStudy(slug)`, `getPosts()`, `getPost(slug)` and `getNow()`, each applying `isPublished` with `process.env.NODE_ENV === "production"` and sorting. Pages and components import from here, never from `content-collections` directly. Add an ESLint `no-restricted-imports` rule to enforce that outside `src/lib/content/`.
-- `src/components/mdx/mdx.tsx`: `export function Mdx({ code })` wraps `MDXContent` with a `components` map from `src/components/mdx/components.ts`. The map starts empty. It is the seam where plan 05 adds `Callout`, figures and code blocks.
+- `src/components/mdx/mdx.tsx`: `export async function Mdx({ code })` is a server component that evaluates the compiled string with `run(code, { ...jsxRuntime, baseUrl: import.meta.url })` and renders the result with a `components` map from `src/components/mdx/components.ts`. The map starts empty. It is the seam where plan 05 adds `Callout`, figures and code blocks.
 - `next.config.ts`: wrap the export with `withContentCollections(nextConfig)`. It must be the outermost wrapper, and the existing `cacheComponents`, `partialPrefetching` and `turbopack.rules` stay.
 - `tsconfig.json`: add `"content-collections": ["./.content-collections/generated"]` to `paths`.
 - `vitest.config.mts`: add the same alias so `src/lib/content/index.test.ts` can import generated data.
@@ -72,12 +72,12 @@ Model: Sonnet — typical setup work, but with a real unknown (Content Collectio
 **Fallbacks**
 
 - If `withContentCollections` fails under Turbopack in 16.4.6, run `content-collections watch` beside `next dev` (`predev`/`prebuild` scripts plus `concurrently`, which is a new dependency, so stop and ask first) and remove the Next adapter.
-- If `MDXContent` from `@content-collections/mdx/react` won't render in a Server Component, use `@content-collections/mdx`'s `useMDXComponent` inside a server-only component. Don't make it a client component, because that ships the code string and runtime to the browser.
+- If `run()` from `@mdx-js/mdx` won't work in a Server Component (for example `import.meta.url` or Turbopack bundling), evaluate the string with `new Function` the way Velite's `MDXContent` does, still server-side. Don't make it a client component, because that ships the code string and runtime to the browser.
 
 ## Out of scope
 
 - Every route that renders content: case study pages (05), blog list and post pages (05 or a new line, see Decision 7), the homepage index rows (04), and the Now page (07). The existing placeholders stay as they are.
-- Prose styling, `Callout`, figures, code blocks and syntax highlighting (plan 05). Seam: the empty `components` map, plus a `remarkPlugins`/`rehypePlugins` array in the `compileMDX` options for 05 to fill.
+- Prose styling, `Callout`, figures, code blocks and syntax highlighting (plan 05). Seam: the empty `components` map, plus a `remarkPlugins`/`rehypePlugins` array in the `compile` options for 05 to fill.
 - RSS, sitemap, OG images and tags pages. Seam: `getPosts()` returns everything those need.
 - Real case study, blog and Now copy. That's Stu's writing.
 
@@ -85,7 +85,7 @@ Model: Sonnet — typical setup work, but with a real unknown (Content Collectio
 
 ### 1. Install and spike the generator
 
-On the plan branch, install `@content-collections/core`, `@content-collections/next`, `@content-collections/mdx` and `zod` (exact versions, no `^`), plus `@content-collections/cli` as a dev dependency. Add a throwaway `content-collections.ts` with one `posts` collection over `content/blog/*.mdx` and a temporary `content/blog/spike.mdx`. Wrap `next.config.ts`, add the tsconfig path and the gitignore line. Then check each of these:
+On the plan branch, install `@content-collections/core`, `@content-collections/next`, `@mdx-js/mdx` and `zod` (exact versions, no `^`), plus `@content-collections/cli` as a dev dependency. Add a throwaway `content-collections.ts` with one `posts` collection over `content/blog/*.mdx` and a temporary `content/blog/spike.mdx`. Wrap `next.config.ts`, add the tsconfig path and the gitignore line. Then check each of these:
 
 - `rm -rf .content-collections && npm run typecheck`. Does `next typegen` generate the files by itself? If yes, drop the CLI dependency and the `pre*` scripts. If no, keep them.
 - `npm run dev` starts, and editing `spike.mdx` regenerates the data.
@@ -99,7 +99,7 @@ Write `src/lib/content/schemas.test.ts` and `src/lib/content/derive.test.ts` fir
 
 ### 3. Collections and seed content
 
-Replace the spike config with the three real collections, using the schemas and helpers from step 2 and `compileMDX` in each transform. Add the seed files from Decision 6: `content/case-studies/{probell,team4q,portfolio}.mdx` and `content/now.mdx`, all `draft: true`, with `TODO` values and a one-line body. Then confirm the build catches mistakes: temporarily break one file's frontmatter, run `npm run content` (or `npm run build`), check the error names the file and the field, and revert. **Check:** `npm run build` passes, and the failure test is described in the commit body. Commit: `feat(content): case study, blog and now collections`.
+Replace the spike config with the three real collections, using the schemas and helpers from step 2 and `compile` from `@mdx-js/mdx` in each transform. Add the seed files from Decision 6: `content/case-studies/{probell,team4q,portfolio}.mdx` and `content/now.mdx`, all `draft: true`, with `TODO` values and a one-line body. Then confirm the build catches mistakes: temporarily break one file's frontmatter, run `npm run content` (or `npm run build`), check the error names the file and the field, and revert. **Check:** `npm run build` passes, and the failure test is described in the commit body. Commit: `feat(content): case study, blog and now collections`.
 
 ### 4. Query module, MDX renderer and import rule
 
