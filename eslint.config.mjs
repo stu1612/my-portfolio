@@ -19,6 +19,24 @@ const eslintConfig = defineConfig([
     "test-results/**",
     "blob-report/**",
   ]),
+  {
+    // Content is read through src/lib/content only.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/lib/content/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "content-collections",
+              message: "Import content from @/lib/content instead.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

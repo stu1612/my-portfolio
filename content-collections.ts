@@ -61,7 +61,7 @@ const now = defineCollection({
   directory: "content",
   include: "now.mdx",
   schema: nowSchema.extend({ content: z.string() }),
-  transform: async ({ content, _meta, ...data }) => ({
+  transform: async ({ content, ...data }) => ({
     ...data,
     slug: "now",
     url: urlFor("now"),
