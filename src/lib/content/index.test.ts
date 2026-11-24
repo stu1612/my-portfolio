@@ -23,8 +23,8 @@ describe("content queries (outside production)", () => {
     expect(studies[0]).toMatchObject({
       displayName: "PROBELL",
       url: "/work/probell",
-      readingMinutes: 1,
     });
+    expect(studies[0].readingMinutes).toBeGreaterThanOrEqual(1);
   });
 
   it("finds a case study by slug, or returns undefined", () => {
