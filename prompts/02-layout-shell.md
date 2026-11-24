@@ -1,6 +1,6 @@
 # 02 · Layout shell
 
-Status: built
+Status: verified
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
@@ -173,4 +173,50 @@ Proposals only, for Stu to review at close-out:
 
 ## Result
 
-_Filled at close-out._
+Closed out on `dev` as a one-off exception: the branch had already been merged into `dev` before close-out ran. Stu approved it.
+
+**Changes from the plan, and why**
+
+- **`<main>` ids are per theme (`main-dark`, `main-light`), not a single `id="main"`.** With `cacheComponents`, Next keeps the previous route hidden in the DOM after a client navigation, so both groups' `<main>` elements can exist at once. One shared id would be duplicated, and the skip link could target the hidden one. `Shell` exports `mainId(theme)`, and the skip link uses it.
+- **`<ViewTransition default="page-fade">`, with the group's size and position morph switched off.** The plan asked for an opacity-only cross-fade. React's default would also animate the root group's geometry, so it is turned off, leaving opacity only. In a check at 3× slow motion, `/` to `/about` blends dark into light with no white frame.
+- **The menu fade works in the installed Chrome.** The no-fade fallback wasn't needed.
+- **The screenshot spec targets `header:visible`** for the same reason as the ids: a hidden previous route's header can still be in the DOM.
+- No `fix(shell)` commits came out of step 6. The screenshots showed no shell bugs.
+
+**Test files changed**
+
+- `e2e/layout.spec.ts` (new): themes, frame and scroll, footer, top bar, clock, menu (viewport cover, links, Escape and focus return, focus trap, navigation, scroll lock, reduced motion) and view transitions.
+- `e2e/routes.ts`: adds `/about`, `/blog`, `/now` and `/contact`.
+- `e2e/a11y.spec.ts`: adds axe runs with the menu open, on light and dark routes.
+- `e2e/screenshots.spec.ts`: adds a menu-open screenshot per route and width, plus a `REDUCED_MOTION=1` variant.
+- `src/lib/local-time.test.ts` (new) and `src/lib/nav.test.ts` (new).
+
+**Checks run at close-out (2026-11-24)**
+
+- `npm run test:e2e`: 53 of 53 passed (e2e and axe, all five routes, menu open and closed).
+- `npm run screenshots`: 30 of 30, plus 30 of 30 with `REDUCED_MOTION=1`, at 375, 768 and 1440px for all five routes, with the menu open and closed.
+
+**Screenshot differences from the references** (structure only; the references' colours, fonts and grid are intentionally not carried over)
+
+1. `02-nav-closed`: the structure matches (name left, three-line button right, hairline under the bar). Differences: the name is mono `meta` uppercase text, not a logo. The status "● LUND HH:MM · OPEN TO WORK" sits left of the button from 720px up (Decision 4). The hairline is `hairline`, not the reference's yellow. There are no vertical grid lines.
+2. `02-nav-hover`: there is no dot. The lines extend to equal length instead (Decision 2). This was checked by e2e, not by screenshot.
+3. `02-nav-menu-open`:
+   - The links fill column by column, as in the reference: Index/About/Blog, then Now/Contact.
+   - At 3rem (the `h1` role) the links are smaller than the reference's.
+   - The menu has its own bar with the name and a hairline. The reference shows only the X.
+   - FOLLOW and CONTACT sit side by side in the two columns from 720px up. The reference stacks them in one column.
+   - At 768px, the email and "Lund, Sweden" wrap onto two lines. At 1440px they share one line.
+   - Below 720px everything stacks in a single column, as planned.
+   - The current page is in `accent`. The reference has no current-page state.
+4. `02-home-frame`: the bar and footer are pinned with hairlines and `<main>` scrolls between them, as in the reference. There is no gradient, rounded frame or label bars (plan 04). The footer holds only the copyright, not the reference's links.
+5. Reduced motion: the screenshots match the motion versions. The menu is visible straight away, with no fade in progress.
+
+The design system's Navbar, Menu, Footer and Page frame sections match what was built. No corrections are proposed.
+
+**Pending for Stu** (from Verification → Stu)
+
+- The feel of the menu fade, the button hover and the page cross-fade on a real device.
+- The homepage frame on a real phone, where the browser toolbar changes the viewport height.
+- Screen-reader behaviour of the menu, if you can.
+- That the clock shows Lund time when viewed from another timezone.
+- Whether the large menu links and the two-column layout feel right next to your references.

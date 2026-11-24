@@ -6,7 +6,7 @@ Current intent only: one line per plan, no implementation detail. Details belong
 
 - [✅] 00 Setup: tooling, tokens, test runners, hooks, commands, deploy to Vercel
 - [✅] 01 Typography and fonts: Archivo + IBM Plex Mono wired to the type scale
-- [ ] 02 Layout shell: navbar with live metadata line, footer, route-based themes, page transitions
+- [✅ ] 02 Layout shell: navbar with live metadata line, footer, route-based themes, page transitions
 
 ## M2 · Content — shippable: a real portfolio
 
