@@ -125,4 +125,18 @@ Proposed. Stu edits AGENTS.md.
 
 ## Result
 
-Filled at close-out.
+Built as planned, with these changes:
+
+- **MDX compile:** `@mdx-js/mdx` 3.1.1 replaced `@content-collections/mdx`. The latter pulled in `mdx-bundler`, `remark-mdx-frontmatter`, `toml` and `uuid`, which gave 5 unfixable `npm audit` findings (3 high, 2 moderate). Audit is clean now. Stu chose this over using `@next/mdx` or accepting the findings.
+- **No CLI package:** `next typegen` loads `content-collections.ts` and generates `.content-collections/` itself, so `@content-collections/cli` was installed for the spike and removed. Instead of the planned `pretypecheck`/`pretest` scripts running the CLI, `package.json` has `"pretest": "next typegen"` so `npm test` works on a fresh clone. `typecheck` already runs typegen.
+- **Rendering:** the server `Mdx` component evaluates the compiled string with `run()` from `@mdx-js/mdx`. No fallback was needed. `loadMdx` lives in `src/components/mdx/load.ts` so a test can render it without an async server component.
+- **Now collection:** it includes only `content/now.mdx`, so a duplicate file can't exist. A missing file fails the build through `assertSingle` in `onSuccess`.
+- **Lint:** `.content-collections/**` is ignored by ESLint, and `no-restricted-imports` blocks `content-collections` outside `src/lib/content/`.
+- **Seed values:** `year: 0 # TODO` is a placeholder because the schema needs an integer.
+- **Not done:** the roadmap line for blog pages (Decision 7) is still open. Nothing in this plan builds `/blog` or `/blog/<slug>`.
+
+**Test files:** added `src/lib/content/schemas.test.ts`, `derive.test.ts` and `index.test.ts` (new, 24 + 6 tests). No existing test file was changed. A scratch test checked the README examples and was deleted.
+
+**Checks run:** typecheck, lint, 87 unit tests, `npm run build`, `npm run test:e2e` (53 passed, axe included) and `npm run screenshots` (30 passed). This plan has no UI, so no new screenshots were taken and no reference design applies.
+
+**Pending for Stu:** fill in one real `TODO` in `content/case-studies/probell.mdx`, break one field on purpose and check the error reads well, and read `content/README.md` to check it's enough to write a post.
