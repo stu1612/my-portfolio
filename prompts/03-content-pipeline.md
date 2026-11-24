@@ -1,6 +1,6 @@
 # 03 · Content pipeline
 
-Status: approved
+Status: built
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
@@ -118,9 +118,10 @@ Add `content/README.md`, a short guide for Stu: where each collection lives, eve
 
 Proposed. Stu edits AGENTS.md.
 
-- **Who owns what → Content** (replaces "The collections tool is chosen in plan 03"): "MDX in `content/`, validated and compiled at build time by Content Collections with Zod schemas in `src/lib/content/schemas.ts`. Pages read content only through `src/lib/content` (lint-enforced). No CMS."
-- **Platform:** "Generated content types live in `.content-collections/` (gitignored). Never edit them."
+- **Who owns what → Content** (replaces "The collections tool is chosen in plan 03"): "MDX in `content/`, validated and compiled at build time by Content Collections with Zod schemas in `src/lib/content/schemas.ts`; MDX is compiled with `@mdx-js/mdx`. Pages read content only through `@/lib/content` (lint-enforced). No CMS."
+- **Platform:** "Generated content types live in `.content-collections/` (gitignored, created by `next typegen`, which `typecheck` and `pretest` run). Never edit them."
 - **Rules:** "Routes over content with `generateStaticParams` must still build when every entry is a draft (Cache Components rejects an empty list): fall back to a list page or `notFound()`, and test it."
+- **Rules:** "Don't add `@content-collections/mdx` (its `mdx-bundler` dependency brings unfixable `npm audit` findings). MDX compiles with `@mdx-js/mdx`."
 
 ## Result
 
