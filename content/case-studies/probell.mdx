@@ -1,14 +1,62 @@
 ---
-title: TODO
+title: Probell Nutrition
 displayName: PROBELL
-summary: TODO the problem, in one sentence
-client: TODO
-role: TODO
-year: 0 # TODO
+summary: A Swedish supplement brand launching in the US needed a fast, credible storefront and lead capture that worked across regions. # CHECK: your own wording of the problem
+client: Probell Nutrition
+role: Design and development (freelance)
+year: 2026
 stack:
-  - TODO
+  - Astro
+  - Vercel
+  - HubSpot
+  - TypeScript
 order: 1
 draft: true
 ---
 
-TODO: write the probell case study.
+## The problem
+
+Probell is a Sweden-based supplement brand with a distinctive kettlebell-shaped protein container, registered as a US company. It needed a site that looked credible to US buyers and distributors, loaded fast on phones, and captured leads reliably across regions.
+
+## Constraints
+
+- A small brand with one decision-maker, so every choice had to be easy to explain and cheap to run.
+- Lead capture had to work for visitors in both Europe and the US.
+- The physical packaging already existed, so the site's brand had to match it.
+
+## What I built
+
+A static site on Astro, deployed on Vercel, with HubSpot forms for lead capture. TODO: pages, content structure and design approach.
+
+<Callout type="decision">
+  Kept the site static with Astro: it is content-first, ships almost no
+  JavaScript, and costs nothing to host.
+</Callout>
+
+## What went wrong
+
+After launch, mobile performance dropped. The cause was images stored in `public/`, which Astro serves as-is, skipping its build-time optimisation.
+
+<Callout type="wrong">
+  Mobile scores regressed after launch. Images in `public/` bypassed Astro's
+  image pipeline; moving them into `src/` fixed it.
+</Callout>
+
+## Decisions along the way
+
+- **Forms tested across regions.** HubSpot form submissions were verified from the US as well as Sweden, since the target market and the client sat on different continents.
+- **Stale social links removed.** Icons pointing at inactive accounts were taken off, framed to the client as a credibility and SEO issue.
+
+<Callout type="decision">
+  Deferred a logo redesign: the existing mark is printed on the physical
+  packaging, and changing it online alone would split the brand.
+</Callout>
+
+<Callout type="ai">
+  TODO: one moment where an AI tool's output was accepted, corrected or rejected
+  on this project, and why.
+</Callout>
+
+## Outcome
+
+The site is live at probellnutrition.com. TODO: results, client feedback, and what I'd do differently.

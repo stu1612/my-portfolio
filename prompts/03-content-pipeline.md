@@ -1,6 +1,6 @@
 # 03 · Content pipeline
 
-Status: built
+Status: verified
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->

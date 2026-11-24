@@ -6,13 +6,13 @@ Current intent only: one line per plan, no implementation detail. Details belong
 
 - [✅] 00 Setup: tooling, tokens, test runners, hooks, commands, deploy to Vercel
 - [✅] 01 Typography and fonts: Archivo + IBM Plex Mono wired to the type scale
-- [✅ ] 02 Layout shell: navbar with live metadata line, footer, route-based themes, page transitions
+- [✅] 02 Layout shell: navbar with live metadata line, footer, route-based themes, page transitions
 
 ## M2 · Content — shippable: a real portfolio
 
-- [ ] 03 Content pipeline: one MDX system with typed collections for case studies, blog and Now
+- [✅] 03 Content pipeline: one MDX system with typed collections for case studies, blog and Now
 - [ ] 04 Project index: dark gradient stage, rows, title fade, preview images, mobile behaviour
-- [ ] 05 Case study template: header, prose, callouts, figures, code blocks
+- [ ] 05 Case study and blog post templates
 - [ ] 06 Contact form: validation, spam protection, Resend
 
 ## M3 · Launch — shippable: v1
