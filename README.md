@@ -20,6 +20,30 @@ Built with Next.js (App Router), TypeScript, Tailwind CSS v4 and MDX. Hosted on 
 
 Every route goes in [`e2e/routes.ts`](e2e/routes.ts) so it gets the smoke, accessibility and screenshot tests. Locally, Playwright uses your installed Chrome; CI uses its bundled Chromium.
 
+## Project structure
+
+Code is grouped by what it belongs to, not by file type, so reviewing one part of the site means opening one folder.
+
+| Folder                    | Holds                                                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`                | Routes only (Next.js). They import from the folders below.                                                             |
+| `src/components/`         | The global site frame: `shell.tsx`, `footer.tsx` and `navbar/`.                                                        |
+| `src/components/ui/`      | Generic presentational components with no feature knowledge.                                                           |
+| `src/features/<feature>/` | Everything one feature owns: components, hooks, logic, types and tests. Created when the first feature needs it.       |
+| `src/lib/`                | Non-UI code shared by two or more features: `site.ts` config and the `content/` pipeline (including its MDX renderer). |
+| `src/styles/`             | `tokens.css` and the parsers and tests that check it.                                                                  |
+
+**Placement rule:** code used by exactly one feature lives in that feature's folder. Code used by two or more goes in `components/ui/` if it is UI, or `lib/` if it is logic. If you're unsure, ask in the plan.
+
+**Conventions:**
+
+- Tests sit beside the file they test (`nav.test.ts` next to `nav.ts`).
+- A component gets its own folder once it has helpers or tests.
+- Keep nesting to at most one subfolder inside a feature, and only once it has 8 or more files.
+- No barrel `index.ts` files.
+- File names are kebab-case.
+- Imports use `./` for siblings and `@/` for everything else.
+
 ## Docs
 
 - [`docs/workflow.md`](docs/workflow.md): how plans, branches and checks fit together

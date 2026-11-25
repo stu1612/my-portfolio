@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isCurrent } from "./nav";
-import { site } from "./site";
+import { site } from "@/lib/site";
 
 describe("isCurrent", () => {
   it("marks the index only on /", () => {

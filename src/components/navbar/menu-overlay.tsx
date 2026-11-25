@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Ref } from "react";
-import { isCurrent } from "@/lib/nav";
+import { isCurrent } from "./nav";
 import { site } from "@/lib/site";
 import { AvailabilityStatus } from "./availability-status";
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "@/components/placeholder-page";
+import { PlaceholderPage } from "@/components/ui/placeholder-page";
 
 export const metadata: Metadata = { title: "Now · Stu Bolderson" };
 
