@@ -14,7 +14,7 @@
 
   /* Stage: homepage only, always dark values */
   --stage-base: #15131a;
-  --field-1: #7a3b2e; /* ember */
+  --field-1: #572d27; /* ember (deep enough for ink-muted text at 4.5:1) */
   --field-2: #4a2f4f; /* plum */
   --field-3: #26324d; /* night blue */
   --glow-1: #e8a28f; /* bright tint of field-1 */
@@ -32,7 +32,7 @@
   --stage-grain-opacity: 0.06;
   /* Unselected index titles while a row is selected: the lowest opacity
      that keeps ink at 3:1 over every stage field (tokens.test.ts). */
-  --opacity-dimmed: 0.5;
+  --opacity-dimmed: 0.45;
 }
 
 [data-theme="dark"] {

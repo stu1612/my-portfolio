@@ -79,6 +79,20 @@ describe("index stage: titles over the gradient fields", () => {
     },
   );
 
+  // The index info lines and heading are small mono text over the stage.
+  it.each(["ink", "ink-muted"])(
+    `%s is at least ${TEXT_AA}:1 on every stage field`,
+    (name) => {
+      for (const bg of backgrounds) {
+        const ratio = contrastRatio(dark[name], dark[bg]);
+        expect(
+          ratio,
+          `--${name} on --${bg} is ${ratio.toFixed(2)}:1`,
+        ).toBeGreaterThanOrEqual(TEXT_AA);
+      }
+    },
+  );
+
   it("defines --opacity-dimmed as a number between 0 and 1", () => {
     expect(dimmed).toBeGreaterThan(0);
     expect(dimmed).toBeLessThan(1);
