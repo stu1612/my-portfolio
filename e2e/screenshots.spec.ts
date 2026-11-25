@@ -53,3 +53,30 @@ for (const width of [375, 768]) {
     });
   });
 }
+
+// Project index (plan 04): split index at rest and with row 2 hovered.
+for (const width of [1024, 1440]) {
+  test(`screenshot: / at ${width}px, row 2 hovered`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const link = page
+      .locator("[data-index-list]:visible [data-row]")
+      .nth(1)
+      .getByRole("link");
+    await link.hover();
+    // Let the 400ms title fade and 200ms cross-fade finish.
+    await page.waitForTimeout(600);
+    await page.screenshot({
+      path: `test-results/screenshots/home-${width}-row2${reducedMotion ? "-reduced" : ""}.png`,
+    });
+  });
+
+  test(`screenshot: / at ${width}px, at rest`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.waitForTimeout(300);
+    await page.screenshot({
+      path: `test-results/screenshots/home-${width}-rest${reducedMotion ? "-reduced" : ""}.png`,
+    });
+  });
+}
