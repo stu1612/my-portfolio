@@ -17,7 +17,7 @@ describe("content queries (outside production)", () => {
     const studies = getCaseStudies();
     expect(studies.map((s) => s.slug)).toEqual([
       "probell",
-      "team4q",
+      "sundet",
       "portfolio",
     ]);
     expect(studies[0]).toMatchObject({
