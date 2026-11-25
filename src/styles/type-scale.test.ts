@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { parseTypeScale } from "./tokens";
 
 const css = readFileSync(
-  new URL("../styles/tokens.css", import.meta.url),
+  new URL("./tokens.css", import.meta.url),
   "utf8",
 );
 const scale = parseTypeScale(css);
