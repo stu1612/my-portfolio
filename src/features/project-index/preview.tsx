@@ -16,7 +16,7 @@ export function Preview({
   return (
     <div
       data-preview-area
-      className="border-hairline relative mx-4 mt-4 aspect-video max-h-[35dvh] shrink-0 overflow-hidden rounded-md border min-[720px]:mx-8"
+      className="border-hairline relative mx-4 mt-4 aspect-video max-w-[calc(35dvh*16/9)] shrink-0 overflow-hidden rounded-md border min-[720px]:mx-8"
     >
       {rows.map((row, index) =>
         row.preview ? (

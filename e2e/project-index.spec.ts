@@ -227,6 +227,13 @@ test.describe("preview (mobile)", () => {
         expect(await previewArea(page).boundingBox()).toEqual(before);
       });
 
+      test("the frame is 16:9 and inside the gutters", async ({ page }) => {
+        const box = (await previewArea(page).boundingBox())!;
+        expect(box.width / box.height).toBeCloseTo(16 / 9, 1);
+        expect(box.x).toBeGreaterThanOrEqual(16);
+        expect(box.x + box.width).toBeLessThanOrEqual(width - 16);
+      });
+
       test("every screenshot has alt text", async ({ page }) => {
         for (const study of published) {
           await expect(preview(page, study.slug)).toHaveAttribute("alt", /\S/);
