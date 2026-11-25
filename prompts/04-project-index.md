@@ -1,6 +1,6 @@
 # 04 · Project index
 
-Status: built
+Status: verified
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
@@ -188,4 +188,38 @@ Proposed. Stu edits AGENTS.md.
 
 ## Result
 
-Filled at close-out.
+Built mobile-first as planned. The build stopped after step 5, Stu checked it on a real phone, and the desktop decisions were made at that stop. Changes from the plan:
+
+- **Ember field darkened** from `#7a3b2e` to `#572d27`. The plan didn't account for small text over the stage: `ink-muted` on full-strength ember was 3.38:1, below AA. Stu chose to darken the field rather than change the info line colour. A test now requires `ink` and `ink-muted` at 4.5:1 on every stage field.
+- **Dimming is 0.45, not about 35%.** `--opacity-dimmed` is the lowest step of 0.05 that keeps dimmed titles at 3:1 over every field. Tests check both that it passes and that 0.40 would fail. Only titles and arrows dim; the info line never does.
+- **Stage geometry tokens:** `--stage-shape-1` to `-3` (size and centre) instead of whole-gradient tokens. The stage and the title fill share them, so the glow in the letters lines up with the field behind.
+- **Shell keeps `bg-surface`** under the stage, as a fallback. It's the same colour as `stage-base`, and the stage paints on top through an `isolate` stacking context.
+- **SUNDET replaces TEAM4Q.** At Stu's request, `team4q.mdx` was renamed to `sundet.mdx` in a prep commit. Past plans still say TEAM4Q.
+- **Preview images:** Stu supplied pre-cropped JPGs, so nothing was cropped in the build. `probell.jpg` is 1740×852, wider than 16:9, so previews are left-anchored (`object-left`) to keep the headline in frame.
+- **Mobile preview frame:** the height cap (35dvh) also caps the width, so the frame stays 16:9 at 768px.
+- **Desktop (Decision 9):**
+  - list and preview split 3:2, not the planned 11:9 (PORTFOLIO overflowed by 10px at 1024px)
+  - the info line stays below the title
+  - hairline rules separate the rows
+  - titles use `clamp(2.75rem, 6.5vw, 6.5rem)` from 1024px only
+- **Long names:** the mobile minimum dropped from 3rem to 2.75rem, and `displayName` is limited to 9 characters (a schema change Stu approved). A test checks that a 9-letter name fits on one line at 375, 768, 1024 and 1440px.
+- **Bugs fixed during the build:**
+  - the initial centring could undo a scroll made before hydration
+  - unquoted colons in YAML alt text silently dropped two case studies (fixed by quoting)
+
+**Found, not fixed (outside this plan):** Content Collections skips a file whose frontmatter is invalid YAML instead of failing the build, which breaks plan 03's "bad frontmatter fails the build". It's a small follow-up fix.
+
+**Test files changed**
+
+- `e2e/project-index.spec.ts`: new. Stage, mobile rows, preview, desktop split index, hover/focus parity, fit, and axe with a row selected.
+- `src/features/project-index/rows.test.ts`: new.
+- `src/styles/contrast.test.ts`: tests for `composite()`.
+- `src/styles/tokens.test.ts`: stage contrast for the glows, dimmed ink, and `ink` and `ink-muted` on the fields.
+- `src/lib/content/index.test.ts`: TEAM4Q renamed to SUNDET; the production drafts test uses `portfolio`, since `probell` is now published.
+- `src/lib/content/schemas.test.ts`: the too-long name is now 10 characters; a new test accepts 9.
+- `e2e/typography.spec.ts`: moved from the old homepage placeholder to `/about`. The body-text test now checks `<body>`, and a new test checks the index title (Archivo 900, 125% width).
+- `e2e/screenshots.spec.ts`: homepage cases at rest, centred and hovered, at all four widths.
+
+**Checks run:** typecheck, lint, 119 unit tests, 99 e2e tests with axe, and screenshots at 375 / 768 / 1024 / 1440px with and without reduced motion, all passing. One slow screenshot run failed twice, then passed 36/36 on the rerun. The screenshots meet every ProjectIndex Must in the design system; there was no layout reference to compare against.
+
+**Stu:** checked on a real phone at step 5 and verified desktop. Still open: re-export `probell.jpg` at 1740×980; decide the design-system and AGENTS.md updates proposed above.

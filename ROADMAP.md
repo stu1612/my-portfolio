@@ -11,7 +11,7 @@ Current intent only: one line per plan, no implementation detail. Details belong
 ## M2 · Content — shippable: a real portfolio
 
 - [✅] 03 Content pipeline: one MDX system with typed collections for case studies, blog and Now
-- [ ] 04 Project index: dark gradient stage, rows, title fade, preview images, mobile behaviour
+- [✅] 04 Project index: dark gradient stage, rows, title fade, preview images, mobile behaviour
 - [ ] 05 Case study and blog post templates
 - [ ] 06 Contact form: validation, spam protection, Resend
 
