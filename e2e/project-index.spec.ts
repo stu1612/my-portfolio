@@ -267,3 +267,148 @@ test("axe: / with row 2 selected", async ({ page }) => {
     .analyze();
   expect(results.violations).toEqual([]);
 });
+
+/** Computed opacity and colour of every row's title and arrow. */
+const rowStyles = (page: Page) =>
+  list(page).evaluate((ul) =>
+    [...ul.querySelectorAll("[data-row]")].map((row) => {
+      const title = getComputedStyle(row.querySelector(".index-title")!);
+      const arrow = getComputedStyle(row.querySelector("[data-arrow]")!);
+      return {
+        state: row.getAttribute("data-state"),
+        titleOpacity: title.opacity,
+        titleColor: title.color,
+        arrowOpacity: arrow.opacity,
+        arrowTransform: arrow.transform,
+      };
+    }),
+  );
+
+/** Tabs from the top of the page until the given row's link has focus. */
+async function tabTo(page: Page, index: number) {
+  const link = rows(page).nth(index).getByRole("link");
+  for (let i = 0; i < 10; i++) {
+    await page.keyboard.press("Tab");
+    if (await link.evaluate((el) => el === document.activeElement)) return;
+  }
+  throw new Error(`Tab never reached row ${index}`);
+}
+
+test.describe("split index (desktop)", () => {
+  for (const width of [1024, 1440]) {
+    test.describe(`at ${width}px`, () => {
+      test.beforeEach(async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto("/");
+      });
+
+      test("at rest nothing is dimmed and the first preview shows, beside the list", async ({
+        page,
+      }) => {
+        for (const style of await rowStyles(page)) {
+          expect(style.state).toBe("idle");
+          expect(style.titleOpacity).toBe("1");
+        }
+        await expect(preview(page, "probell")).toHaveAttribute(
+          "data-shown",
+          "true",
+        );
+        const listBox = (await list(page).boundingBox())!;
+        const previewBox = (await previewArea(page).boundingBox())!;
+        expect(previewBox.x).toBeGreaterThan(listBox.x + listBox.width);
+        expect(previewBox.width / previewBox.height).toBeCloseTo(16 / 9, 1);
+      });
+
+      test("hovering a row and focusing it with Tab look identical", async ({
+        page,
+      }) => {
+        await rows(page).nth(1).getByRole("link").hover();
+        await expect(rows(page).nth(1)).toHaveAttribute(
+          "data-state",
+          "selected",
+        );
+        await page.waitForTimeout(500); // fades finish
+        const hovered = await rowStyles(page);
+
+        await page.goto("/");
+        await page.mouse.move(0, 0);
+        await tabTo(page, 1);
+        await expect(rows(page).nth(1)).toHaveAttribute(
+          "data-state",
+          "selected",
+        );
+        await page.waitForTimeout(500);
+        expect(await rowStyles(page)).toEqual(hovered);
+
+        expect(hovered[1].titleColor).toBe("rgba(0, 0, 0, 0)");
+        expect(Number(hovered[0].titleOpacity)).toBe(
+          Number(await dimmedOpacity(page)),
+        );
+      });
+
+      test("the hovered row's preview shows", async ({ page }) => {
+        await rows(page).nth(1).getByRole("link").hover();
+        await page.waitForTimeout(400);
+        expect(await opacity(preview(page, "sundet"))).toBe("1");
+        expect(await opacity(preview(page, "probell"))).toBe("0");
+      });
+
+      test("leaving the list clears the dimming and keeps the last preview", async ({
+        page,
+      }) => {
+        await rows(page).nth(1).getByRole("link").hover();
+        await expect(rows(page).nth(1)).toHaveAttribute(
+          "data-state",
+          "selected",
+        );
+        await page.mouse.move(width - 10, 890);
+        await expect(rows(page).nth(1)).toHaveAttribute("data-state", "idle");
+        await expect(preview(page, "sundet")).toHaveAttribute(
+          "data-shown",
+          "true",
+        );
+      });
+
+      test("rows are separated by hairline rules", async ({ page }) => {
+        const borders = await rows(page)
+          .first()
+          .evaluate((el) => getComputedStyle(el).borderBottomWidth);
+        expect(borders).toBe("1px");
+      });
+    });
+  }
+
+  test("axe: / at 1440px with a row hovered", async ({ page }) => {
+    const { default: AxeBuilder } = await import("@axe-core/playwright");
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await rows(page).nth(1).getByRole("link").hover();
+    await page.waitForTimeout(500);
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+});
+
+// The longest allowed name (9 characters, e.g. PORTFOLIO) fits one line at
+// every width the index is designed for.
+for (const width of [375, 768, 1024, 1440]) {
+  test(`a 9-letter name fits one line at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    const fit = await list(page)
+      .locator(".index-title")
+      .first()
+      .evaluate((el) => {
+        el.textContent = "PORTFOLIO";
+        return {
+          overflow: el.scrollWidth - el.clientWidth,
+          right: el.getBoundingClientRect().right,
+        };
+      });
+    expect(fit.overflow).toBeLessThanOrEqual(0);
+    expect(fit.right).toBeLessThanOrEqual(width);
+  });
+}

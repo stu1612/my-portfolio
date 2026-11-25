@@ -9,14 +9,16 @@ import type { IndexRow } from "./rows";
 export function Preview({
   rows,
   shown,
+  className = "",
 }: {
   rows: readonly IndexRow[];
   shown: number;
+  className?: string;
 }) {
   return (
     <div
       data-preview-area
-      className="border-hairline relative mx-4 mt-4 aspect-video max-w-[calc(35dvh*16/9)] shrink-0 overflow-hidden rounded-md border min-[720px]:mx-8"
+      className={`border-hairline relative mx-4 mt-4 aspect-video max-w-[calc(35dvh*16/9)] shrink-0 overflow-hidden rounded-md border min-[720px]:mx-8 lg:mx-0 lg:mt-0 lg:max-w-none ${className}`}
     >
       {rows.map((row, index) =>
         row.preview ? (
@@ -25,7 +27,7 @@ export function Preview({
             src={row.preview.src}
             alt={row.preview.alt}
             fill
-            sizes="(min-width: 720px) calc(100vw - 4rem), calc(100vw - 2rem)"
+            sizes="(min-width: 1024px) 45vw, (min-width: 720px) calc(100vw - 4rem), calc(100vw - 2rem)"
             // All are needed straight away; the first is the likely LCP.
             {...(index === 0 ? { preload: true } : { loading: "eager" })}
             data-preview={row.slug}

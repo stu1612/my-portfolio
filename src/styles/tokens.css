@@ -79,7 +79,11 @@
      Tailwind reads the --font-weight and --letter-spacing keys, so
      text-h1 gives the full role. Roles that also need width, case or a
      family are the type-* utilities at the end of this file. */
-  --text-display-index: clamp(3rem, 9vw, 7.5rem);
+  --text-display-index: clamp(
+    2.75rem,
+    9vw,
+    7.5rem
+  ); /* 2.75rem: a 9-letter name fits at 375px */
   --text-display-index--line-height: 0.95;
   --text-display-index--font-weight: 900;
   --text-display-hero: 5rem;
@@ -122,6 +126,14 @@
   --duration-page: 200ms; /* menu fade, page cross-fade */
   --duration-dim: 200ms; /* index row dimming, preview cross-fade */
   --duration-title: 400ms; /* index title colour fade */
+}
+
+/* From 1024px the index shares the width with the preview (split index),
+   so its titles scale more gently. */
+@media (min-width: 64rem) {
+  :root {
+    --text-display-index: clamp(2.75rem, 6.5vw, 6.5rem);
+  }
 }
 
 /* Roles that need more than size, weight and tracking. */
