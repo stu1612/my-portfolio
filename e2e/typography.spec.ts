@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+// The homepage is the project index now (plan 04); the shared placeholder
+// page lives on /about, /blog, /now and /contact.
 test.describe("typography on the placeholder page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/about");
     await page.evaluate(() => document.fonts.ready);
   });
 
@@ -17,27 +19,30 @@ test.describe("typography on the placeholder page", () => {
     expect(style.weight).toBe("800");
   });
 
+  // No page has a paragraph yet, so check the base every reading text
+  // inherits from <body>.
   test("body text is Archivo 400", async ({ page }) => {
-    const style = await page
-      .getByText("Full-stack developer, Copenhagen / Skåne")
-      .evaluate((el) => {
-        const s = getComputedStyle(el);
-        return { family: s.fontFamily, weight: s.fontWeight };
-      });
+    const style = await page.locator("body").evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { family: s.fontFamily, weight: s.fontWeight };
+    });
     expect(style.family).toMatch(/^Archivo/);
     expect(style.weight).toBe("400");
   });
 
   test("meta line is tracked uppercase Plex Mono 500", async ({ page }) => {
-    const style = await page.getByText("Site in progress").evaluate((el) => {
-      const s = getComputedStyle(el);
-      return {
-        family: s.fontFamily,
-        weight: s.fontWeight,
-        transform: s.textTransform,
-        letterSpacing: s.letterSpacing,
-      };
-    });
+    const style = await page
+      .locator("main:visible")
+      .getByText("Coming soon")
+      .evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          family: s.fontFamily,
+          weight: s.fontWeight,
+          transform: s.textTransform,
+          letterSpacing: s.letterSpacing,
+        };
+      });
     expect(style.family).toMatch(/^"?IBM Plex Mono/);
     expect(style.weight).toBe("500");
     expect(style.transform).toBe("uppercase");
@@ -58,5 +63,30 @@ test.describe("typography on the placeholder page", () => {
       archivo400: true,
       mono500: true,
     });
+  });
+});
+
+test("index titles are Archivo 900 at 125% width, uppercase", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  const style = await page
+    .locator("[data-index-list]:visible .index-title")
+    .first()
+    .evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        family: s.fontFamily,
+        weight: s.fontWeight,
+        stretch: s.fontStretch,
+        transform: s.textTransform,
+      };
+    });
+  expect(style.family).toMatch(/^Archivo/);
+  expect(style).toMatchObject({
+    weight: "900",
+    stretch: "125%",
+    transform: "uppercase",
   });
 });
