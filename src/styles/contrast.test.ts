@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contrastRatio, relativeLuminance } from "./contrast";
+import { composite, contrastRatio, relativeLuminance } from "./contrast";
 
 describe("relativeLuminance", () => {
   it("is 0 for black and 1 for white", () => {
@@ -25,5 +25,20 @@ describe("contrastRatio", () => {
 
   it("matches a known pair (#767676 on white is about 4.54)", () => {
     expect(contrastRatio("#767676", "#ffffff")).toBeCloseTo(4.54, 2);
+  });
+});
+
+describe("composite", () => {
+  it("blends black at half opacity over white to mid grey", () => {
+    expect(composite("#000000", "#ffffff", 0.5)).toBe("#808080");
+  });
+
+  it("returns the foreground at alpha 1 and the background at alpha 0", () => {
+    expect(composite("#a8431f", "#15131a", 1)).toBe("#a8431f");
+    expect(composite("#a8431f", "#15131a", 0)).toBe("#15131a");
+  });
+
+  it("rejects an alpha outside 0–1", () => {
+    expect(() => composite("#000000", "#ffffff", 1.5)).toThrow();
   });
 });

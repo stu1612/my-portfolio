@@ -1,12 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { contrastRatio } from "./contrast";
+import { composite, contrastRatio } from "./contrast";
 import { parseTokenThemes } from "./tokens";
 
-const css = readFileSync(
-  new URL("./tokens.css", import.meta.url),
-  "utf8",
-);
+const css = readFileSync(new URL("./tokens.css", import.meta.url), "utf8");
 const themes = parseTokenThemes(css);
 
 const TEXT_AA = 4.5;
@@ -60,4 +57,54 @@ describe("stage (flat colours; contrast over the gradient is a manual check)", (
       ).toBeGreaterThanOrEqual(TEXT_AA);
     },
   );
+});
+
+describe("index stage: titles over the gradient fields", () => {
+  const dark = themes.dark;
+  const LARGE_AA = 3;
+  const backgrounds = ["stage-base", "field-1", "field-2", "field-3"];
+
+  const dimmed = Number(/--opacity-dimmed:\s*([0-9.]+)/.exec(css)?.[1]);
+
+  describe.each(["glow-1", "glow-2", "glow-3"])(
+    "%s (selected title fill)",
+    (glow) => {
+      it.each(backgrounds)(`on %s is at least ${LARGE_AA}:1`, (bg) => {
+        const ratio = contrastRatio(dark[glow], dark[bg]);
+        expect(
+          ratio,
+          `--${glow} on --${bg} is ${ratio.toFixed(2)}:1`,
+        ).toBeGreaterThanOrEqual(LARGE_AA);
+      });
+    },
+  );
+
+  it("defines --opacity-dimmed as a number between 0 and 1", () => {
+    expect(dimmed).toBeGreaterThan(0);
+    expect(dimmed).toBeLessThan(1);
+  });
+
+  it.each(backgrounds)(`dimmed ink on %s is at least ${LARGE_AA}:1`, (bg) => {
+    const ratio = contrastRatio(
+      composite(dark.ink, dark[bg], dimmed),
+      dark[bg],
+    );
+    expect(
+      ratio,
+      `ink at ${dimmed} on --${bg} is ${ratio.toFixed(2)}:1`,
+    ).toBeGreaterThanOrEqual(LARGE_AA);
+  });
+
+  it("--opacity-dimmed is the lowest passing step of 0.05 (dims as far as AA allows)", () => {
+    const lower = Math.round((dimmed - 0.05) * 100) / 100;
+    const worst = Math.min(
+      ...backgrounds.map((bg) =>
+        contrastRatio(composite(dark.ink, dark[bg], lower), dark[bg]),
+      ),
+    );
+    expect(
+      worst,
+      `ink at ${lower} would still pass; lower the token`,
+    ).toBeLessThan(LARGE_AA);
+  });
 });

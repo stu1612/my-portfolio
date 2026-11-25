@@ -20,6 +20,19 @@
   --glow-1: #e8a28f; /* bright tint of field-1 */
   --glow-2: #cfa9d4; /* bright tint of field-2 */
   --glow-3: #a7b8dd; /* bright tint of field-3 */
+
+  /* Stage geometry: size and centre of each radial field. Shared by the
+     stage (filled with field-*) and the index title fill (glow-*), so the
+     glow in the letters sits over the field it tints. */
+  --stage-shape-1: 70% 60% at 12% 18%;
+  --stage-shape-2: 65% 55% at 88% 42%;
+  --stage-shape-3: 80% 60% at 38% 96%;
+  /* Static grain: SVG fractal noise, tiled. */
+  --stage-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --stage-grain-opacity: 0.06;
+  /* Unselected index titles while a row is selected: the lowest opacity
+     that keeps ink at 3:1 over every stage field (tokens.test.ts). */
+  --opacity-dimmed: 0.5;
 }
 
 [data-theme="dark"] {
@@ -107,6 +120,8 @@
   --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
   --duration-link: 150ms; /* links, buttons, focus */
   --duration-page: 200ms; /* menu fade, page cross-fade */
+  --duration-dim: 200ms; /* index row dimming, preview cross-fade */
+  --duration-title: 400ms; /* index title colour fade */
 }
 
 /* Roles that need more than size, weight and tracking. */
