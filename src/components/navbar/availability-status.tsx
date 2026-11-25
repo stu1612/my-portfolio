@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { formatLocalTime, msUntilNextMinute } from "@/lib/local-time";
+import { formatLocalTime, msUntilNextMinute } from "./local-time";
 import { site } from "@/lib/site";
 
 // Ticks on each whole minute. The snapshot is the minute number, so it only

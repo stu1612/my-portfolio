@@ -4,7 +4,7 @@ import { contrastRatio } from "./contrast";
 import { parseTokenThemes } from "./tokens";
 
 const css = readFileSync(
-  new URL("../styles/tokens.css", import.meta.url),
+  new URL("./tokens.css", import.meta.url),
   "utf8",
 );
 const themes = parseTokenThemes(css);
