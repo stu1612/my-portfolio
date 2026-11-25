@@ -17,6 +17,13 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   const openMenu = () => {
+    // Measured before the scroll lock removes the scrollbar: globals.css pads
+    // the body by this much so the page behind doesn't shift sideways.
+    const root = document.documentElement;
+    root.style.setProperty(
+      "--scrollbar-width",
+      `${window.innerWidth - root.clientWidth}px`,
+    );
     dialogRef.current?.showModal();
     setOpen(true);
   };

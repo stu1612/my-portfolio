@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { lightRoutes } from "./routes";
 
 const widths = [375, 768, 1440];
@@ -11,6 +11,10 @@ const LIGHT_SURFACE = "rgb(243, 238, 231)";
 // a client navigation, so always target the visible shell.
 const main = (page: Page) => page.locator("main:visible");
 const shell = (page: Page) => main(page).locator("..");
+
+// The availability line ("Lund 14:05 · Open to work") in a bar or the menu.
+const availability = (scope: Locator) =>
+  scope.locator("p", { hasText: "Open to work" });
 
 const shellBackground = (page: Page) =>
   shell(page).evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -157,7 +161,7 @@ test.describe("top bar", () => {
     await expect(
       header.getByRole("link", { name: "Stu Bolderson" }),
     ).toBeVisible();
-    const status = header.getByTestId("availability");
+    const status = availability(header);
     await expect(status).toBeVisible();
     await expect(status).toHaveText("Lund 14:05 · Open to work");
     // Shown uppercase, as the meta style requires.
@@ -170,7 +174,7 @@ test.describe("top bar", () => {
     await page.clock.install({ time: new Date("2026-01-15T13:05:30Z") });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/about");
-    const status = page.locator("header:visible").getByTestId("availability");
+    const status = availability(page.locator("header:visible"));
     await expect(status).toContainText("14:05");
     await page.clock.runFor(31_000);
     await expect(status).toContainText("14:06");
@@ -179,9 +183,7 @@ test.describe("top bar", () => {
   test("the status is hidden at 375px", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 800 });
     await page.goto("/");
-    await expect(
-      page.locator("header:visible").getByTestId("availability"),
-    ).toBeHidden();
+    await expect(availability(page.locator("header:visible"))).toBeHidden();
     await expect(menuButton(page)).toBeVisible();
   });
 
@@ -198,17 +200,20 @@ test.describe("top bar", () => {
     });
   }
 
-  test("Tab reaches the skip link first, and it moves focus to <main>", async ({
-    page,
-  }) => {
-    await page.goto("/about");
-    await page.keyboard.press("Tab");
-    const skip = page.getByRole("link", { name: "Skip to content" });
-    await expect(skip).toBeFocused();
-    await expect(skip).toBeVisible();
-    await page.keyboard.press("Enter");
-    await expect(main(page)).toBeFocused();
-  });
+  // "/" is the fixed frame (only <main> scrolls); "/about" scrolls the document.
+  for (const route of ["/", "/about"]) {
+    test(`Tab reaches the skip link first on ${route}, and it moves focus to <main>`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      await page.keyboard.press("Tab");
+      const skip = page.getByRole("link", { name: "Skip to content" });
+      await expect(skip).toBeFocused();
+      await expect(skip).toBeVisible();
+      await page.keyboard.press("Enter");
+      await expect(main(page)).toBeFocused();
+    });
+  }
 
   test("the menu button shows the focus ring on keyboard focus", async ({
     page,
@@ -333,9 +338,7 @@ test.describe("full-screen menu", () => {
       menu.getByRole("link", { name: "boldersonstu@gmail.com" }),
     ).toHaveAttribute("href", "mailto:boldersonstu@gmail.com");
 
-    await expect(menu.getByTestId("availability")).toHaveText(
-      "Lund 15:05 · Open to work",
-    );
+    await expect(availability(menu)).toHaveText("Lund 15:05 · Open to work");
   });
 
   test("aria-expanded follows the state; Escape closes and returns focus", async ({
