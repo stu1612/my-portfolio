@@ -2,10 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { parseTypeScale } from "./tokens";
 
-const css = readFileSync(
-  new URL("./tokens.css", import.meta.url),
-  "utf8",
-);
+const css = readFileSync(new URL("./tokens.css", import.meta.url), "utf8");
 const scale = parseTypeScale(css);
 
 const roles = [

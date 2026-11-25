@@ -14,12 +14,25 @@
 
   /* Stage: homepage only, always dark values */
   --stage-base: #15131a;
-  --field-1: #7a3b2e; /* ember */
+  --field-1: #572d27; /* ember (deep enough for ink-muted text at 4.5:1) */
   --field-2: #4a2f4f; /* plum */
   --field-3: #26324d; /* night blue */
   --glow-1: #e8a28f; /* bright tint of field-1 */
   --glow-2: #cfa9d4; /* bright tint of field-2 */
   --glow-3: #a7b8dd; /* bright tint of field-3 */
+
+  /* Stage geometry: size and centre of each radial field. Shared by the
+     stage (filled with field-*) and the index title fill (glow-*), so the
+     glow in the letters sits over the field it tints. */
+  --stage-shape-1: 70% 60% at 12% 18%;
+  --stage-shape-2: 65% 55% at 88% 42%;
+  --stage-shape-3: 80% 60% at 38% 96%;
+  /* Static grain: SVG fractal noise, tiled. */
+  --stage-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --stage-grain-opacity: 0.06;
+  /* Unselected index titles while a row is selected: the lowest opacity
+     that keeps ink at 3:1 over every stage field (tokens.test.ts). */
+  --opacity-dimmed: 0.45;
 }
 
 [data-theme="dark"] {
@@ -66,7 +79,11 @@
      Tailwind reads the --font-weight and --letter-spacing keys, so
      text-h1 gives the full role. Roles that also need width, case or a
      family are the type-* utilities at the end of this file. */
-  --text-display-index: clamp(3rem, 9vw, 7.5rem);
+  --text-display-index: clamp(
+    2.75rem,
+    9vw,
+    7.5rem
+  ); /* 2.75rem: a 9-letter name fits at 375px */
   --text-display-index--line-height: 0.95;
   --text-display-index--font-weight: 900;
   --text-display-hero: 5rem;
@@ -107,6 +124,16 @@
   --ease-out-soft: cubic-bezier(0.2, 0, 0, 1);
   --duration-link: 150ms; /* links, buttons, focus */
   --duration-page: 200ms; /* menu fade, page cross-fade */
+  --duration-dim: 200ms; /* index row dimming, preview cross-fade */
+  --duration-title: 400ms; /* index title colour fade */
+}
+
+/* From 1024px the index shares the width with the preview (split index),
+   so its titles scale more gently. */
+@media (min-width: 64rem) {
+  :root {
+    --text-display-index: clamp(2.75rem, 6.5vw, 6.5rem);
+  }
 }
 
 /* Roles that need more than size, weight and tracking. */
@@ -141,4 +168,72 @@
 /* Headings balance their line breaks (Suggested rule). */
 @utility type-heading {
   text-wrap: balance;
+}
+
+/* Homepage stage: three radial fields over stage-base. Static, never
+   animated. Geometry from --stage-shape-*. */
+@utility stage-fields {
+  background-color: var(--stage-base);
+  background-image:
+    radial-gradient(var(--stage-shape-1), var(--field-1), transparent),
+    radial-gradient(var(--stage-shape-2), var(--field-2), transparent),
+    radial-gradient(var(--stage-shape-3), var(--field-3), transparent);
+}
+
+@utility stage-grain {
+  background-image: var(--stage-grain);
+  opacity: var(--stage-grain-opacity);
+}
+
+/* Index row title. At rest solid ink; selected, the colour fades to
+   transparent and the glow fill shows through the letters (the one colour
+   animation the design system allows). The fill uses the stage geometry
+   with glow-* tints over a glow base, and background-attachment: fixed
+   lines it up with the stage. Without background-clip: text it stays ink. */
+@utility index-title {
+  color: var(--ink);
+  transition:
+    color var(--duration-title) var(--ease-out-soft),
+    opacity var(--duration-dim) var(--ease-out-soft);
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    background-image:
+      radial-gradient(var(--stage-shape-1), var(--glow-1), transparent),
+      radial-gradient(var(--stage-shape-2), var(--glow-2), transparent),
+      radial-gradient(var(--stage-shape-3), var(--glow-3), transparent),
+      linear-gradient(120deg, var(--glow-1), var(--glow-2), var(--glow-3));
+    background-attachment: fixed;
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    [data-state="selected"] & {
+      color: transparent;
+    }
+  }
+
+  [data-state="dimmed"] & {
+    opacity: var(--opacity-dimmed);
+  }
+}
+
+/* Index row arrow: dims with the title, nudges right when selected
+   (transform only; no movement under reduced motion). */
+@utility index-arrow {
+  transition:
+    opacity var(--duration-dim) var(--ease-out-soft),
+    transform var(--duration-dim) var(--ease-out-soft);
+
+  [data-state="dimmed"] & {
+    opacity: var(--opacity-dimmed);
+  }
+
+  [data-state="selected"] & {
+    transform: translateX(--spacing(2));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-state="selected"] & {
+      transform: none;
+    }
+  }
 }
