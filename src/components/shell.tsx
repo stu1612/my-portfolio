@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Footer } from "./footer";
-import { Navbar } from "./navbar";
+import { Navbar } from "./navbar/navbar";
 
 type ShellProps = {
   /** Set by the route group: (home) is dark, (pages) is light. */
