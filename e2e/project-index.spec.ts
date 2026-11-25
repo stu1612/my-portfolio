@@ -196,6 +196,59 @@ test.describe("project rows (mobile)", () => {
   });
 });
 
+const previewArea = (page: Page) => page.locator("[data-preview-area]:visible");
+const preview = (page: Page, slug: string) =>
+  previewArea(page).locator(`[data-preview="${slug}"]`);
+const opacity = (el: ReturnType<typeof preview>) =>
+  el.evaluate((node) => getComputedStyle(node).opacity);
+
+test.describe("preview (mobile)", () => {
+  for (const width of [375, 768]) {
+    test.describe(`at ${width}px`, () => {
+      test.beforeEach(async ({ page }) => {
+        await page.setViewportSize({ width, height: 812 });
+        await page.goto("/");
+      });
+
+      test("shows only the selected project's screenshot", async ({ page }) => {
+        await expect(preview(page, "probell")).toHaveAttribute(
+          "data-shown",
+          "true",
+        );
+        await centre(page, 1);
+        await page.waitForTimeout(400); // 200ms cross-fade
+        expect(await opacity(preview(page, "sundet"))).toBe("1");
+        expect(await opacity(preview(page, "probell"))).toBe("0");
+      });
+
+      test("stays in place while the list scrolls", async ({ page }) => {
+        const before = await previewArea(page).boundingBox();
+        await centre(page, 1);
+        expect(await previewArea(page).boundingBox()).toEqual(before);
+      });
+
+      test("every screenshot has alt text", async ({ page }) => {
+        for (const study of published) {
+          await expect(preview(page, study.slug)).toHaveAttribute("alt", /\S/);
+        }
+      });
+
+      test("the shown screenshot is sharp (enough pixels for the screen)", async ({
+        page,
+      }) => {
+        const img = preview(page, "probell");
+        await expect(img).toHaveJSProperty("complete", true);
+        const size = await img.evaluate((node) => ({
+          natural: (node as HTMLImageElement).naturalWidth,
+          rendered: node.getBoundingClientRect().width,
+          dpr: window.devicePixelRatio,
+        }));
+        expect(size.natural).toBeGreaterThanOrEqual(size.rendered * size.dpr);
+      });
+    });
+  }
+});
+
 test("axe: / with row 2 selected", async ({ page }) => {
   const { default: AxeBuilder } = await import("@axe-core/playwright");
   await page.setViewportSize({ width: 375, height: 812 });

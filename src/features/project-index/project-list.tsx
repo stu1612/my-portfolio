@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { IndexRow } from "./rows";
+import { Preview } from "./preview";
+import { initialSelection, type IndexRow } from "./rows";
 
 /** Below this width the list is scroll-snapped and selects its centred row. */
 const MOBILE_QUERY = "(max-width: 1023px)";
@@ -33,8 +34,9 @@ export function ProjectList({ rows }: { rows: IndexRow[] }) {
         return;
       }
       // Start with the first row centred, so the list rests on a snap point.
+      // Skipped if the list was already scrolled (e.g. before hydration).
       const first = scroller.querySelector<HTMLElement>("[data-row]");
-      if (first) {
+      if (first && scroller.scrollTop === 0) {
         scroller.scrollTop =
           first.offsetTop + first.offsetHeight / 2 - scroller.clientHeight / 2;
       }
@@ -61,42 +63,48 @@ export function ProjectList({ rows }: { rows: IndexRow[] }) {
     };
   }, []);
 
+  // The preview keeps showing a project while nothing is selected.
+  const shown = selected ?? initialSelection(rows) ?? 0;
+
   return (
-    // The wrapper is a size container so the scroller's padding can be half
-    // its own height (cqh): the first and last rows can reach the centre.
-    <div className="relative min-h-0 flex-1 [container-type:size]">
-      <ul
-        ref={scrollerRef}
-        aria-label="Case studies"
-        data-index-list
-        data-selected={selected ?? undefined}
-        className="h-full snap-y snap-mandatory overflow-y-auto py-[50cqh]"
-      >
-        {rows.map((row, index) => (
-          <li
-            key={row.slug}
-            data-row={index}
-            data-state={rowState(index, selected)}
-            className="snap-center"
-          >
-            <Link
-              href={row.href}
-              // The /work pages arrive in plan 05: don't prefetch 404s.
-              prefetch={false}
-              className="focus-ring flex flex-col gap-2 px-4 py-4 min-[720px]:px-8"
+    <>
+      <Preview rows={rows} shown={shown} />
+      {/* The wrapper is a size container so the scroller's padding can be half
+          its own height (cqh): the first and last rows can reach the centre. */}
+      <div className="[container-type:size] relative min-h-0 flex-1">
+        <ul
+          ref={scrollerRef}
+          aria-label="Case studies"
+          data-index-list
+          data-selected={selected ?? undefined}
+          className="h-full snap-y snap-mandatory overflow-y-auto py-[50cqh]"
+        >
+          {rows.map((row, index) => (
+            <li
+              key={row.slug}
+              data-row={index}
+              data-state={rowState(index, selected)}
+              className="snap-center"
             >
-              <span className="index-title type-display-index whitespace-nowrap">
-                {row.displayName}
-              </span>
-              <span className="flex items-center gap-4">
-                <span className="type-meta text-ink-muted">{row.info}</span>
-                <Arrow />
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+              <Link
+                href={row.href}
+                // The /work pages arrive in plan 05: don't prefetch 404s.
+                prefetch={false}
+                className="focus-ring flex flex-col gap-2 px-4 py-4 min-[720px]:px-8"
+              >
+                <span className="index-title type-display-index whitespace-nowrap">
+                  {row.displayName}
+                </span>
+                <span className="flex items-center gap-4">
+                  <span className="type-meta text-ink-muted">{row.info}</span>
+                  <Arrow />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
 
