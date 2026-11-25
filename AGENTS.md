@@ -17,7 +17,7 @@ Scripts are added in plan 00. Until then, only the first four exist.
 ## Platform
 
 - Next.js App Router, TypeScript strict, Tailwind CSS v4. For any framework or library API, read the docs for the installed major version, not memory. Exact versions are pinned in `package.json`.
-- Routes in `src/app/`. Shared components in `src/components/`. Pure logic (parsing, validation, data shaping) in `src/lib/`, written so Vitest can test it without a browser.
+- Routes in src/app/; they import from components and features. Global site-frame components (shell, navbar, footer) in src/components/; generic presentational components in src/components/ui/. Code owned by one feature (components, hooks, logic, types, tests) in src/features/<feature>/. Non-UI logic shared by 2+ features in src/lib/ (exception: src/lib/content/ also holds the MDX renderer). Pure logic is written so Vitest can test it without a browser. Tests sit beside the file they test.
 - Styles: `src/styles/tokens.css` imported by `src/app/globals.css`. No other global CSS.
 - Never edit `.next/`, `node_modules/` or generated files.
 
