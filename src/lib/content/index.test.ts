@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadMdx } from "@/components/mdx/load";
+import { loadMdx } from "./mdx/load";
 import {
   getCaseStudies,
   getCaseStudy,
