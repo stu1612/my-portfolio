@@ -36,10 +36,7 @@ export function AvailabilityStatus({ className = "" }: { className?: string }) {
       : formatLocalTime(new Date(minute * 60_000), site.timeZone);
 
   return (
-    <p
-      className={`type-meta items-center gap-2 ${className}`}
-      data-testid="availability"
-    >
+    <p className={`type-meta items-center gap-2 ${className}`}>
       {site.availability.open && (
         <span aria-hidden className="bg-success size-2 rounded-full" />
       )}
