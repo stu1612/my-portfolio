@@ -1,4 +1,7 @@
 :root {
+  /* Native UI (scrollbars, form controls) matches the theme */
+  color-scheme: light;
+
   /* Colour: light (reading pages, default) */
   --surface: #f3eee7;
   --surface-raised: #fbf8f3;
@@ -20,6 +23,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --surface: #15131a;
   --surface-raised: #1e1b24;
   --ink: #f2eee8;
