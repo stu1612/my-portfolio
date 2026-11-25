@@ -157,3 +157,18 @@
 @utility type-heading {
   text-wrap: balance;
 }
+
+/* Homepage stage: three radial fields over stage-base. Static, never
+   animated. Geometry from --stage-shape-*. */
+@utility stage-fields {
+  background-color: var(--stage-base);
+  background-image:
+    radial-gradient(var(--stage-shape-1), var(--field-1), transparent),
+    radial-gradient(var(--stage-shape-2), var(--field-2), transparent),
+    radial-gradient(var(--stage-shape-3), var(--field-3), transparent);
+}
+
+@utility stage-grain {
+  background-image: var(--stage-grain);
+  opacity: var(--stage-grain-opacity);
+}

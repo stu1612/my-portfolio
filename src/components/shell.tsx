@@ -10,20 +10,26 @@ type ShellProps = {
    * only <main> scrolls. Other pages scroll the document.
    */
   frame?: boolean;
+  /**
+   * A decorative layer painted behind the bar, main and footer (the homepage
+   * stage). The frame isolates a stacking context so it stays behind them.
+   */
+  stage?: ReactNode;
   children: ReactNode;
 };
 
 export const mainId = (theme: ShellProps["theme"]) => `main-${theme}`;
 
-export function Shell({ theme, frame = false, children }: ShellProps) {
+export function Shell({ theme, frame = false, stage, children }: ShellProps) {
   return (
     <div
       // Light is the :root default, so only dark needs the attribute.
       data-theme={theme === "dark" ? "dark" : undefined}
-      className={`bg-surface text-ink relative flex flex-col ${
+      className={`bg-surface text-ink relative isolate flex flex-col ${
         frame ? "h-dvh overflow-hidden" : "min-h-dvh"
       }`}
     >
+      {stage}
       <a
         href={`#${mainId(theme)}`}
         className="type-meta bg-surface focus-ring sr-only z-10 p-2 focus:not-sr-only focus:absolute focus:top-2 focus:left-4"
