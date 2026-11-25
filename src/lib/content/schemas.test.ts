@@ -48,9 +48,16 @@ describe("caseStudySchema", () => {
   it("rejects a display name that is too long", () => {
     const result = caseStudySchema.safeParse({
       ...caseStudy,
-      displayName: "ABCDEFGHIJKLM",
+      displayName: "ABCDEFGHIJ",
     });
     expect(result.success).toBe(false);
+  });
+
+  it("accepts a 9-character display name (the longest that fits)", () => {
+    expect(
+      caseStudySchema.safeParse({ ...caseStudy, displayName: "PORTFOLIO" })
+        .success,
+    ).toBe(true);
   });
 
   it("rejects a lowercase display name", () => {

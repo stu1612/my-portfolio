@@ -8,10 +8,11 @@ const draft = z.boolean().default(false);
 
 export const caseStudySchema = z.strictObject({
   title: z.string().min(1),
-  // Short caps name shown on the homepage index (design system: must fit one line).
+  // Short caps name shown on the homepage index (design system: must fit one
+  // line). 9 characters is what fits at 375px (PORTFOLIO, plan 04).
   displayName: z
     .string()
-    .max(12)
+    .max(9)
     .regex(/^[A-Z0-9 ]+$/, "Use capitals, digits and spaces only"),
   // The problem, in one sentence.
   summary: z.string().min(1),
