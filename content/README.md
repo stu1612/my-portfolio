@@ -15,7 +15,7 @@ The file name is the slug: `content/blog/why-i-validate.mdx` is `/blog/why-i-val
 ```yaml
 ---
 title: Rebuilding the booking flow
-displayName: PROBELL # capitals, digits, spaces; max 12 characters
+displayName: PROBELL # capitals, digits, spaces; max 9 characters
 summary: Customers abandoned bookings because the form lost their input. # the problem, one sentence
 client: Probell
 role: Frontend lead
@@ -65,7 +65,7 @@ The build fails and names the file and the field. For example, a typo and a name
 
 ```text
 Validation failed on content/case-studies/probell.mdx:
-- displayName: Too big: expected string to have <=12 characters
+- displayName: Too big: expected string to have <=9 characters
 - role: Invalid input: expected string, received undefined
 - : Unrecognized key: "rolee"
 ```

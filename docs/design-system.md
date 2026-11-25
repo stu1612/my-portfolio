@@ -68,7 +68,7 @@ Copyright only: `© 2026 Stu Bolderson`.
 
 ### ProjectIndex (homepage)
 
-Extended-caps project rows over a fixed dark gradient stage. Rows: PROBELL, TEAM4Q, PORTFOLIO.
+Extended-caps project rows over a fixed dark gradient stage. Rows: PROBELL, SUNDET, PORTFOLIO.
 
 - **Must:** stage is three radial fields (`field-1` to `field-3`) over `stage-base`, plus static grain. The stage never changes colour.
 - **Must:** each row is a plain link: display name, mono info (stack and year, `ink-muted`), arrow.

@@ -17,7 +17,7 @@ describe("content queries (outside production)", () => {
     const studies = getCaseStudies();
     expect(studies.map((s) => s.slug)).toEqual([
       "probell",
-      "team4q",
+      "sundet",
       "portfolio",
     ]);
     expect(studies[0]).toMatchObject({
@@ -46,7 +46,9 @@ describe("content queries (production)", () => {
   it("leaves drafts out", () => {
     vi.stubEnv("NODE_ENV", "production");
     expect(getCaseStudies().every((s) => !s.draft)).toBe(true);
-    expect(getCaseStudy("probell")).toBeUndefined();
+    // portfolio.mdx is still a draft; probell and sundet are published.
+    expect(getCaseStudy("portfolio")).toBeUndefined();
+    expect(getCaseStudy("probell")?.slug).toBe("probell");
     expect(getNow()).toBeUndefined();
   });
 });
