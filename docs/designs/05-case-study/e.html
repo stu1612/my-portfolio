@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05 case study · option E: centred article</title>
+    <!-- Design reference for prompts/05-case-study-template.md. Not app code.
+         Colours from tokens.css. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="../../../src/styles/tokens.css" />
+    <link rel="stylesheet" href="base.css" />
+    <style>
+      :root {
+        /* Plain code (Stu, round 3): no highlighting, every token is ink */
+        --code-foreground: var(--ink);
+
+        --measure: 68ch; /* reading column */
+        --wide: 64rem; /* cover and wide figures */
+      }
+
+      /* Centred column with an optional wide breakout */
+      .col,
+      .wide {
+        margin-inline: auto;
+        width: 100%;
+      }
+      .col {
+        max-width: var(--measure);
+      }
+      .wide {
+        max-width: var(--wide);
+      }
+
+      /* ---------- Header ---------- */
+      .head {
+        padding-block: calc(var(--sp) * 16) calc(var(--sp) * 12);
+        display: grid;
+        gap: calc(var(--sp) * 6);
+      }
+      @media (min-width: 1024px) {
+        .head {
+          padding-top: calc(var(--sp) * 24);
+        }
+      }
+      .head .h1 {
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        line-height: 1.05;
+      }
+      .dek {
+        font-size: 1.375rem;
+        line-height: 1.45;
+        color: var(--ink-muted);
+        text-wrap: pretty;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: calc(var(--sp) * 6);
+        row-gap: calc(var(--sp) * 4);
+        margin-top: calc(var(--sp) * 4);
+      }
+      @media (min-width: 720px) {
+        .facts {
+          grid-template-columns: 1.4fr 1.6fr 0.6fr 0.6fr;
+        }
+      }
+      .facts div {
+        border-top: 1px solid var(--ink);
+        padding-top: calc(var(--sp) * 2);
+        display: grid;
+        gap: calc(var(--sp) * 1);
+      }
+      .facts dd {
+        font-size: 1rem;
+        line-height: 1.45;
+      }
+      .links {
+        display: flex;
+        gap: calc(var(--sp) * 6);
+      }
+
+      /* ---------- Cover ---------- */
+      .cover {
+        margin-bottom: calc(var(--sp) * 16);
+      }
+      .cover img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        object-position: left center;
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-md);
+      }
+
+      /* ---------- Body ---------- */
+      .article > * + * {
+        margin-top: calc(var(--sp) * 6);
+      }
+      .article > h2 {
+        margin-top: calc(var(--sp) * 24);
+      }
+      .article > h2:first-child {
+        margin-top: 0;
+      }
+      .article > h2 + * {
+        margin-top: calc(var(--sp) * 4);
+      }
+      .article > .wide,
+      .article > .wide + * {
+        margin-top: calc(var(--sp) * 12);
+      }
+      .article ul {
+        padding-left: calc(var(--sp) * 6);
+      }
+      .article li + li {
+        margin-top: calc(var(--sp) * 2);
+      }
+      .article a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+      .article :not(pre) > code {
+        font-family: var(--font-mono);
+        font-size: 0.9375rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-sm);
+        padding: 0 calc(var(--sp) * 1);
+      }
+      .h2 {
+        font-weight: 800;
+      }
+
+      /* Wide figure: caption stays in the reading column */
+      main > figure.wide {
+        margin-block: calc(var(--sp) * 12);
+      }
+      figure.wide img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        object-position: left center;
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-md);
+      }
+      figure.wide figcaption {
+        max-width: var(--measure);
+        margin: calc(var(--sp) * 2) auto 0;
+        display: flex;
+        gap: calc(var(--sp) * 4);
+        font-size: 1rem;
+        line-height: 1.55;
+        color: var(--ink-muted);
+      }
+      figure.wide figcaption .meta {
+        flex: none;
+        padding-top: 2px;
+      }
+
+      /* Code block: frame + filename bar, highlighted at build time */
+      .code {
+        overflow: hidden;
+      }
+      .code-bar {
+        display: flex;
+        justify-content: space-between;
+        gap: calc(var(--sp) * 4);
+        padding: calc(var(--sp) * 2) calc(var(--sp) * 4);
+        border-bottom: 1px solid var(--hairline);
+        color: var(--ink-muted);
+      }
+      .code pre {
+        margin: 0;
+        padding: calc(var(--sp) * 4);
+        overflow-x: auto;
+        font-family: var(--font-mono);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: var(--code-foreground);
+      }
+
+      /* ---------- End ---------- */
+      .end {
+        margin-top: calc(var(--sp) * 24);
+        padding-block: calc(var(--sp) * 8) calc(var(--sp) * 16);
+        border-top: 1px solid var(--ink);
+        display: grid;
+        gap: calc(var(--sp) * 8);
+      }
+      .next {
+        text-decoration: none;
+        display: grid;
+        gap: calc(var(--sp) * 2);
+      }
+      .next .h2 {
+        display: flex;
+        align-items: baseline;
+        gap: calc(var(--sp) * 4);
+      }
+      .next .arrow {
+        transition: transform 150ms ease-out;
+      }
+      .next:hover,
+      .next:focus-visible {
+        color: var(--accent);
+      }
+      .next:hover .arrow,
+      .next:focus-visible .arrow {
+        transform: translateX(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar gutter">
+      <a class="meta" href="#">Stu Bolderson</a>
+      <div class="bar-right">
+        <p class="status meta">
+          <span class="dot"></span>Lund 14:32 · Open to work
+        </p>
+        <span class="menu-icon" aria-label="Menu"
+          ><span></span><span></span><span></span
+        ></span>
+      </div>
+    </header>
+
+    <main class="gutter">
+      <div class="col head">
+        <p class="meta muted">Case study · Probell Nutrition · 2026</p>
+        <h1 class="h1">
+          A credible US storefront for a Swedish supplement brand
+        </h1>
+        <p class="dek">
+          A Swedish supplement brand launching in the US needed a fast, credible
+          storefront and lead capture that worked across regions.
+        </p>
+        <dl class="facts">
+          <div>
+            <dt class="meta muted">Role</dt>
+            <dd>Design and development (freelance)</dd>
+          </div>
+          <div>
+            <dt class="meta muted">Stack</dt>
+            <dd>Astro · Vercel · HubSpot · TypeScript</dd>
+          </div>
+          <div>
+            <dt class="meta muted">Year</dt>
+            <dd>2026</dd>
+          </div>
+          <div>
+            <dt class="meta muted">Read</dt>
+            <dd>4 min</dd>
+          </div>
+        </dl>
+        <p class="links">
+          <a class="arrow-link meta" href="#"
+            >Live site <span aria-hidden="true">↗</span></a
+          >
+        </p>
+      </div>
+
+      <div class="wide cover">
+        <img
+          src="../../../public/previews/probell.jpg"
+          alt="Probell Nutrition homepage: the Whey 100 Protein headline beside a kettlebell-shaped protein tub"
+        />
+      </div>
+
+      <article class="col article">
+        <h2 class="h2">The problem</h2>
+        <p>
+          Probell is a Sweden-based supplement brand with a distinctive
+          kettlebell-shaped protein container, registered as a US company. It
+          needed a site that looked credible to US buyers and distributors,
+          loaded fast on phones, and captured leads reliably across regions.
+        </p>
+
+        <h2 class="h2">Constraints</h2>
+        <ul>
+          <li>
+            A small brand with one decision-maker, so every choice had to be
+            easy to explain and cheap to run.
+          </li>
+          <li>
+            Lead capture had to work for visitors in both Europe and the US.
+          </li>
+          <li>
+            The physical packaging already existed, so the site's brand had to
+            match it.
+          </li>
+        </ul>
+
+        <h2 class="h2">What I built</h2>
+        <p>
+          A static site on Astro, deployed on Vercel, with HubSpot forms for
+          lead capture. TODO: pages, content structure and design approach.
+        </p>
+        <aside class="frame callout" aria-label="Decision">
+          <p class="callout-label meta">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 15V7M8 7 3 2M8 7l5-5M3 2v4M3 2h4M13 2v4M13 2H9"
+              /></svg
+            >Decision
+          </p>
+          <p>
+            Kept the site static with Astro: it is content-first, ships almost
+            no JavaScript, and costs nothing to host.
+          </p>
+        </aside>
+      </article>
+
+      <figure class="wide">
+        <img
+          src="../../../public/previews/probell.jpg"
+          alt="Probell homepage on desktop"
+        />
+        <figcaption>
+          <span class="meta">Fig 1</span
+          ><span
+            >Placeholder: the homepage at launch, Whey 100 above the fold.</span
+          >
+        </figcaption>
+      </figure>
+
+      <article class="col article">
+        <h2 class="h2">What went wrong</h2>
+        <p>
+          After launch, mobile performance dropped. The cause was images stored
+          in <code>public/</code>, which Astro serves as-is, skipping its
+          build-time optimisation. Moving them into <code>src/</code> and
+          rendering them through <code>&lt;Image&gt;</code> fixed it:
+        </p>
+        <div class="frame code">
+          <p class="code-bar meta">
+            <span>src/components/Hero.astro</span><span>Astro</span>
+          </p>
+          <pre><code><span class="c">---</span>
+<span class="k">import</span> { <span class="f">Image</span> } <span class="k">from</span> <span class="s">"astro:assets"</span>;
+<span class="k">import</span> hero <span class="k">from</span> <span class="s">"../assets/whey-100.jpg"</span>;
+<span class="c">---</span>
+
+<span class="c">&lt;!-- Placeholder example: before, a plain &lt;img src="/whey-100.jpg"&gt; --&gt;</span>
+&lt;<span class="f">Image</span> src={hero} alt=<span class="s">"Whey 100 Protein tub"</span> widths={[<span class="n">480</span>, <span class="n">960</span>]} /&gt;</code></pre>
+        </div>
+        <aside class="frame callout" aria-label="What went wrong">
+          <p class="callout-label meta">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M8 1.5 15 14H1L8 1.5Z" />
+              <path d="M8 6v4M8 11.5v1" /></svg
+            >What went wrong
+          </p>
+          <p>
+            Mobile scores regressed after launch. Images in
+            <code>public/</code> bypassed Astro's image pipeline; moving them
+            into <code>src/</code> fixed it.
+          </p>
+        </aside>
+
+        <h2 class="h2">Decisions along the way</h2>
+        <ul>
+          <li>
+            <strong>Forms tested across regions.</strong> HubSpot form
+            submissions were verified from the US as well as Sweden, since the
+            target market and the client sat on different continents.
+          </li>
+          <li>
+            <strong>Stale social links removed.</strong> Icons pointing at
+            inactive accounts were taken off, framed to the client as a
+            credibility and SEO issue.
+          </li>
+        </ul>
+        <aside class="frame callout" aria-label="Decision">
+          <p class="callout-label meta">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 15V7M8 7 3 2M8 7l5-5M3 2v4M3 2h4M13 2v4M13 2H9"
+              /></svg
+            >Decision
+          </p>
+          <p>
+            Deferred a logo redesign: the existing mark is printed on the
+            physical packaging, and changing it online alone would split the
+            brand.
+          </p>
+        </aside>
+        <aside class="frame callout" aria-label="AI note">
+          <p class="callout-label meta">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 1v4M8 11v4M1 8h4M11 8h4M3.5 3.5l2 2M10.5 10.5l2 2M12.5 3.5l-2 2M5.5 10.5l-2 2"
+              /></svg
+            >AI note
+          </p>
+          <p>
+            TODO: one moment where an AI tool's output was accepted, corrected
+            or rejected on this project, and why.
+          </p>
+        </aside>
+
+        <h2 class="h2">Outcome</h2>
+        <p>
+          The site is live at <a href="#">probellnutrition.com</a>. TODO:
+          results, client feedback, and what I'd do differently.
+        </p>
+      </article>
+
+      <nav class="col end" aria-label="More work">
+        <a class="next" href="#">
+          <span class="meta muted"
+            >Next project · Astro · TypeScript · 2026</span
+          >
+          <span class="h2"
+            >Sundet <span class="arrow" aria-hidden="true">→</span></span
+          >
+        </a>
+        <a class="arrow-link meta" href="#"
+          ><span aria-hidden="true">←</span> Index</a
+        >
+      </nav>
+    </main>
+
+    <footer class="foot gutter">
+      <p class="meta muted">© 2026 Stu Bolderson</p>
+    </footer>
+  </body>
+</html>
