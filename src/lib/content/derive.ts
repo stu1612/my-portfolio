@@ -56,3 +56,28 @@ export function assertSingle<T>(items: readonly T[], name: string): T {
   }
   return items[0];
 }
+
+/**
+ * Reserved slug for a dynamic route with nothing published. Cache Components
+ * rejects an empty generateStaticParams, so the route prerenders this one
+ * slug and its page calls notFound().
+ */
+export const EMPTY_SLUG = "_empty";
+
+/** generateStaticParams for a content route: one param per entry, never none. */
+export function staticSlugs(
+  entries: readonly { slug: string }[],
+): { slug: string }[] {
+  if (entries.length === 0) return [{ slug: EMPTY_SLUG }];
+  return entries.map(({ slug }) => ({ slug }));
+}
+
+/** The entry after `slug`, wrapping to the first. Undefined if there is no other. */
+export function nextCaseStudy<T extends { slug: string }>(
+  entries: readonly T[],
+  slug: string,
+): T | undefined {
+  const index = entries.findIndex((entry) => entry.slug === slug);
+  if (index === -1 || entries.length < 2) return undefined;
+  return entries[(index + 1) % entries.length];
+}

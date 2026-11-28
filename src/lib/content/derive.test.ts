@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  EMPTY_SLUG,
   assertSingle,
   isPublished,
+  nextCaseStudy,
   readingMinutes,
   slugFromPath,
   sortCaseStudies,
   sortPosts,
+  staticSlugs,
   urlFor,
 } from "./derive";
 
@@ -86,5 +89,35 @@ describe("assertSingle", () => {
   it("throws, naming the collection, on zero or many", () => {
     expect(() => assertSingle([], "now")).toThrow(/now/);
     expect(() => assertSingle(["a", "b"], "now")).toThrow(/now/);
+  });
+});
+
+describe("staticSlugs", () => {
+  it("returns one param per entry", () => {
+    expect(staticSlugs([{ slug: "probell" }, { slug: "sundet" }])).toEqual([
+      { slug: "probell" },
+      { slug: "sundet" },
+    ]);
+  });
+
+  it("returns the reserved slug when nothing is published", () => {
+    expect(staticSlugs([])).toEqual([{ slug: EMPTY_SLUG }]);
+  });
+});
+
+describe("nextCaseStudy", () => {
+  const items = [{ slug: "a" }, { slug: "b" }, { slug: "c" }];
+
+  it("returns the next entry", () => {
+    expect(nextCaseStudy(items, "a")?.slug).toBe("b");
+  });
+
+  it("wraps from the last to the first", () => {
+    expect(nextCaseStudy(items, "c")?.slug).toBe("a");
+  });
+
+  it("is undefined with one entry or an unknown slug", () => {
+    expect(nextCaseStudy([{ slug: "a" }], "a")).toBeUndefined();
+    expect(nextCaseStudy(items, "zzz")).toBeUndefined();
   });
 });

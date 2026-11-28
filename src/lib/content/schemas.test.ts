@@ -33,6 +33,24 @@ describe("caseStudySchema", () => {
     expect(parsed.preview?.alt).toBe("The booking form");
   });
 
+  it("accepts an optional live site url", () => {
+    const parsed = caseStudySchema.parse({
+      ...caseStudy,
+      url: "https://probellnutrition.com",
+    });
+    expect(parsed.url).toBe("https://probellnutrition.com");
+    expect(caseStudySchema.parse(caseStudy).url).toBeUndefined();
+  });
+
+  it.each(["probellnutrition.com", "javascript:alert(1)", "ftp://x.com"])(
+    "rejects url %s",
+    (url) => {
+      expect(caseStudySchema.safeParse({ ...caseStudy, url }).success).toBe(
+        false,
+      );
+    },
+  );
+
   it("rejects a missing required field", () => {
     const rest: Record<string, unknown> = { ...caseStudy };
     delete rest.summary;
