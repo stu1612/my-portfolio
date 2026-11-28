@@ -4,6 +4,7 @@ import {
   assertSingle,
   isPublished,
   nextCaseStudy,
+  olderPost,
   readingMinutes,
   slugFromPath,
   sortCaseStudies,
@@ -119,5 +120,24 @@ describe("nextCaseStudy", () => {
   it("is undefined with one entry or an unknown slug", () => {
     expect(nextCaseStudy([{ slug: "a" }], "a")).toBeUndefined();
     expect(nextCaseStudy(items, "zzz")).toBeUndefined();
+  });
+});
+
+describe("olderPost", () => {
+  // Newest first, as getPosts() returns them.
+  const items = [{ slug: "new" }, { slug: "mid" }, { slug: "old" }];
+
+  it("returns the next older post", () => {
+    expect(olderPost(items, "new")?.slug).toBe("mid");
+    expect(olderPost(items, "mid")?.slug).toBe("old");
+  });
+
+  it("does not wrap: the oldest post has none", () => {
+    expect(olderPost(items, "old")).toBeUndefined();
+  });
+
+  it("is undefined with one post or an unknown slug", () => {
+    expect(olderPost([{ slug: "new" }], "new")).toBeUndefined();
+    expect(olderPost(items, "zzz")).toBeUndefined();
   });
 });
