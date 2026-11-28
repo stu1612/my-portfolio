@@ -27,6 +27,13 @@ describe("content queries (outside production)", () => {
     expect(studies[0].readingMinutes).toBeGreaterThanOrEqual(1);
   });
 
+  it("keeps the live site apart from the computed page url", () => {
+    expect(getCaseStudy("probell")).toMatchObject({
+      url: "/work/probell",
+      liveUrl: "https://probellnutrition.com",
+    });
+  });
+
   it("finds a case study by slug, or returns undefined", () => {
     expect(getCaseStudy("probell")?.slug).toBe("probell");
     expect(getCaseStudy("nope")).toBeUndefined();

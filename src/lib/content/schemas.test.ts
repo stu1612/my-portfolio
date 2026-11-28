@@ -36,16 +36,16 @@ describe("caseStudySchema", () => {
   it("accepts an optional live site url", () => {
     const parsed = caseStudySchema.parse({
       ...caseStudy,
-      url: "https://probellnutrition.com",
+      liveUrl: "https://probellnutrition.com",
     });
-    expect(parsed.url).toBe("https://probellnutrition.com");
-    expect(caseStudySchema.parse(caseStudy).url).toBeUndefined();
+    expect(parsed.liveUrl).toBe("https://probellnutrition.com");
+    expect(caseStudySchema.parse(caseStudy).liveUrl).toBeUndefined();
   });
 
   it.each(["probellnutrition.com", "javascript:alert(1)", "ftp://x.com"])(
-    "rejects url %s",
-    (url) => {
-      expect(caseStudySchema.safeParse({ ...caseStudy, url }).success).toBe(
+    "rejects liveUrl %s",
+    (liveUrl) => {
+      expect(caseStudySchema.safeParse({ ...caseStudy, liveUrl }).success).toBe(
         false,
       );
     },
