@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05b blog post · article</title>
+    <!-- Design reference for prompts/05b-blog.md. Not app code.
+         The post page reuses the case study article (mockup E, as built in
+         plan 05): same column, body, code frame and ending. It drops the
+         facts row and the cover. Copy is placeholder. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="../../../src/styles/tokens.css" />
+    <link rel="stylesheet" href="../05-case-study/base.css" />
+    <link rel="stylesheet" href="blog.css" />
+    <style>
+      /* Header: kicker, headline, deck, then one meta line (tags, and the
+         updated date when there is one) under an ink rule. */
+      .post-meta {
+        margin-top: calc(var(--sp) * 4);
+        border-top: 1px solid var(--ink);
+        padding-top: calc(var(--sp) * 2);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: calc(var(--sp) * 2) calc(var(--sp) * 6);
+      }
+
+      /* Body: the case study article-flow */
+      .article > * + * {
+        margin-top: calc(var(--sp) * 6);
+      }
+      .article > h2 {
+        margin-top: calc(var(--sp) * 24);
+      }
+      .article > h2:first-child {
+        margin-top: 0;
+      }
+      .article > h2 + * {
+        margin-top: calc(var(--sp) * 4);
+      }
+      .article ul {
+        padding-left: calc(var(--sp) * 6);
+      }
+      .article li + li {
+        margin-top: calc(var(--sp) * 2);
+      }
+      .article a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+      .article :not(pre) > code {
+        font-family: var(--font-mono);
+        font-size: 0.9375rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-sm);
+        padding: 0 calc(var(--sp) * 1);
+      }
+      .article blockquote {
+        border-left: 2px solid var(--ink);
+        padding-left: calc(var(--sp) * 6);
+      }
+      .h2 {
+        font-weight: 800;
+      }
+      .code {
+        overflow: hidden;
+      }
+      .code-bar {
+        display: flex;
+        justify-content: space-between;
+        gap: calc(var(--sp) * 4);
+        padding: calc(var(--sp) * 2) calc(var(--sp) * 4);
+        border-bottom: 1px solid var(--hairline);
+        color: var(--ink-muted);
+      }
+      .code-bar span:first-child {
+        text-transform: none;
+      }
+      .code pre {
+        margin: 0;
+        padding: calc(var(--sp) * 4);
+        overflow-x: auto;
+        font-family: var(--font-mono);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+      }
+
+      /* Ending: the case study ending, pointing at the next older post */
+      .end {
+        margin-top: calc(var(--sp) * 24);
+        padding-block: calc(var(--sp) * 8) calc(var(--sp) * 16);
+        border-top: 1px solid var(--ink);
+        display: grid;
+        gap: calc(var(--sp) * 8);
+      }
+      .next {
+        text-decoration: none;
+        display: grid;
+        gap: calc(var(--sp) * 2);
+      }
+      /* Post titles are long: the arrow follows the last word, not the
+         row's far edge (the case study ending uses a short client name). */
+      .next .h2 {
+        text-wrap: balance;
+      }
+      .next .arrow {
+        display: inline-block;
+        margin-left: calc(var(--sp) * 2);
+      }
+      .next:hover,
+      .next:focus-visible {
+        color: var(--accent);
+      }
+      .next .arrow {
+        transition: transform 150ms ease-out;
+      }
+      .next:hover .arrow,
+      .next:focus-visible .arrow {
+        transform: translateX(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar gutter">
+      <a class="meta" href="#">Stu Bolderson</a>
+      <div class="bar-right">
+        <p class="status meta">
+          <span class="dot"></span>Lund 14:32 · Open to work
+        </p>
+        <span class="menu-icon" aria-label="Menu"
+          ><span></span><span></span><span></span
+        ></span>
+      </div>
+    </header>
+
+    <main class="gutter">
+      <header class="col page-head">
+        <p class="meta muted">
+          Blog · <time datetime="2026-11-28">28 Nov 2026</time> · 6 min read
+        </p>
+        <h1 class="headline">Building this site with plans and an agent</h1>
+        <p class="dek">
+          Every feature starts as a written plan I approve. What that changed,
+          and what it didn't.
+        </p>
+        <p class="post-meta meta muted">
+          <span>Agents · Process</span>
+          <span>Updated <time datetime="2026-11-30">30 Nov 2026</time></span>
+        </p>
+      </header>
+
+      <article class="col article">
+        <h2 class="h2">The setup</h2>
+        <p>
+          Placeholder copy. Each feature is a plan in <code>prompts/</code>
+          with a goal, the decisions I sign off, and steps that each end in a
+          commit. The agent drafts it; I approve it; only then can it touch
+          <code>src/</code>.
+        </p>
+        <div class="frame code">
+          <p class="code-bar meta">
+            <span>prompts/05b-blog.md</span><span>md</span>
+          </p>
+          <pre><code># 05b · Blog list and post template
+
+Status: draft
+
+## Goal
+
+A visitor opens /blog, scans the posts newest first, and reads one.</code></pre>
+        </div>
+
+        <h2 class="h2">What changed</h2>
+        <ul>
+          <li>
+            <strong>Decisions are written down.</strong> Every choice I made is
+            in a plan, with the options I turned down.
+          </li>
+          <li>
+            <strong>Guards, not trust.</strong> Hooks block app code until a
+            plan says <code>approved</code>.
+          </li>
+        </ul>
+        <blockquote>
+          <p>Placeholder: a pull quote from the post.</p>
+        </blockquote>
+        <aside class="frame callout" aria-label="AI note">
+          <p class="callout-label meta">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 1v4M8 11v4M1 8h4M11 8h4M3.5 3.5l2 2M10.5 10.5l2 2M12.5 3.5l-2 2M5.5 10.5l-2 2"
+              /></svg
+            >AI note
+          </p>
+          <p>
+            Callouts from case studies work in posts too: same three labels.
+          </p>
+        </aside>
+
+        <h2 class="h2">What didn't</h2>
+        <p>
+          Placeholder. The work still needs judgement; the plan only makes it
+          visible. Read more in <a href="#">the case study</a>.
+        </p>
+      </article>
+
+      <nav class="col end" aria-label="More posts">
+        <a class="next" href="#">
+          <span class="meta muted"
+            >Older post · <time datetime="2026-11-10">10 Nov 2026</time></span
+          >
+          <span class="h2"
+            >Why my case studies start with the problem
+            <span class="arrow" aria-hidden="true">→</span></span
+          >
+        </a>
+        <a class="arrow-link meta" href="list-a.html"
+          ><span aria-hidden="true">←</span> All posts</a
+        >
+      </nav>
+    </main>
+
+    <footer class="foot gutter">
+      <p class="meta muted">© 2026 Stu Bolderson</p>
+    </footer>
+  </body>
+</html>

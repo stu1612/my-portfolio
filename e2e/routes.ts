@@ -4,6 +4,8 @@ export const routes = [
   "/",
   "/about",
   "/blog",
+  "/blog/plans-and-an-agent",
+  "/blog/content-that-fails-the-build",
   "/now",
   "/contact",
   "/work/probell",

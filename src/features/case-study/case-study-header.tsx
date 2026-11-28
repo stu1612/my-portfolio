@@ -1,3 +1,4 @@
+import { ArticleHeader } from "@/components/ui/article-header";
 import { kicker, toFacts, type CaseStudyFields } from "./facts";
 
 type HeaderProps = CaseStudyFields & {
@@ -9,10 +10,11 @@ type HeaderProps = CaseStudyFields & {
 /** Kicker, headline, deck, facts under ink rules, and the live site link. */
 export function CaseStudyHeader(props: HeaderProps) {
   return (
-    <header className="max-w-measure mx-auto grid gap-6 pt-16 pb-12 min-[1024px]:pt-24">
-      <p className="type-meta text-ink-muted">{kicker(props)}</p>
-      <h1 className="text-headline type-heading">{props.title}</h1>
-      <p className="type-deck">{props.summary}</p>
+    <ArticleHeader
+      kicker={kicker(props)}
+      title={props.title}
+      deck={props.summary}
+    >
       <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-4 min-[720px]:grid-cols-[1.4fr_1.6fr_0.6fr_0.6fr]">
         {toFacts(props).map(({ label, value }) => (
           <div key={label} className="border-ink grid gap-1 border-t pt-2">
@@ -32,6 +34,6 @@ export function CaseStudyHeader(props: HeaderProps) {
           </a>
         </p>
       )}
-    </header>
+    </ArticleHeader>
   );
 }

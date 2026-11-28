@@ -81,3 +81,16 @@ export function nextCaseStudy<T extends { slug: string }>(
   if (index === -1 || entries.length < 2) return undefined;
   return entries[(index + 1) % entries.length];
 }
+
+/**
+ * The post after `slug` in newest-first order: the next older one. Posts are a
+ * timeline, so the oldest has none (no wrap, unlike nextCaseStudy).
+ */
+export function olderPost<T extends { slug: string }>(
+  entries: readonly T[],
+  slug: string,
+): T | undefined {
+  const index = entries.findIndex((entry) => entry.slug === slug);
+  if (index === -1) return undefined;
+  return entries[index + 1];
+}

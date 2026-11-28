@@ -1,0 +1,27 @@
+---
+title: Content that fails the build, not the page
+description: Typed MDX collections, checked at build time, so a typo in a post never deploys.
+published: 2026-11-24
+updated: 2026-11-28
+tags:
+  - Next.js
+  - MDX
+draft: false
+---
+
+## The problem
+
+Case studies, posts and the Now page are MDX files in the repo. A missing field or a typo in frontmatter should stop the build with a clear message, not show up as a broken page in production.
+
+## Typed collections
+
+Content Collections reads `content/`, checks each file's frontmatter against a Zod schema and generates typed data. Unknown keys fail too, so a misspelt field never passes silently.
+
+<Callout type="decision">
+  I compile MDX with `@mdx-js/mdx` instead of the collections' own MDX package.
+  That package pulled in dependencies with `npm audit` findings I couldn't fix.
+</Callout>
+
+## Drafts
+
+Every entry has a `draft` flag. Drafts show in development and are left out of production builds, through one filter in one module.

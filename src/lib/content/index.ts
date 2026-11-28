@@ -43,4 +43,4 @@ export function getNow(): Now | undefined {
   return isPublished(entry, isProduction()) ? entry : undefined;
 }
 
-export { EMPTY_SLUG, nextCaseStudy, staticSlugs } from "./derive";
+export { EMPTY_SLUG, nextCaseStudy, olderPost, staticSlugs } from "./derive";
