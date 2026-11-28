@@ -1,6 +1,6 @@
 # 05 · Case study template
 
-Status: approved
+Status: built
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
@@ -9,7 +9,7 @@ Status: approved
 
 ## Goal
 
-A visitor clicks PROBELL on the index and reads `/work/probell` as an article: a centred reading column with a headline, the problem as the deck, and the facts. A wide cover image follows, then the story with callouts, wide figures and highlighted code. It ends on the next project. The route still builds when every case study is a draft.
+A visitor clicks PROBELL on the index and reads `/work/probell` as an article: a centred reading column with a headline, the problem as the deck, and the facts. A wide cover image follows, then the story with callouts, wide figures and plain code blocks. It ends on the next project. The route still builds when every case study is a draft.
 
 ## Brief
 
