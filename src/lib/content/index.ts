@@ -42,3 +42,5 @@ export function getNow(): Now | undefined {
   const entry = assertSingle(allNows, "now");
   return isPublished(entry, isProduction()) ? entry : undefined;
 }
+
+export { EMPTY_SLUG, nextCaseStudy, staticSlugs } from "./derive";

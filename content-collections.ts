@@ -2,7 +2,6 @@
 // src/lib/content/schemas.ts and compiles each MDX body at build time.
 // Pages never import the generated data directly: use src/lib/content.
 import { defineCollection, defineConfig } from "@content-collections/core";
-import { compile } from "@mdx-js/mdx";
 import { z } from "zod";
 import {
   assertSingle,
@@ -10,17 +9,12 @@ import {
   slugFromPath,
   urlFor,
 } from "./src/lib/content/derive";
+import { compileBody } from "./src/lib/content/mdx/compile";
 import {
   caseStudySchema,
   nowSchema,
   postSchema,
 } from "./src/lib/content/schemas";
-
-// Plan 05 adds remark/rehype plugins here (callouts, code highlighting).
-async function compileBody(body: string): Promise<string> {
-  const file = await compile(body, { outputFormat: "function-body" });
-  return String(file);
-}
 
 const caseStudies = defineCollection({
   name: "caseStudies",
