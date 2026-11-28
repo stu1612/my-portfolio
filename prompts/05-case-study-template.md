@@ -1,6 +1,6 @@
 # 05 · Case study template
 
-Status: draft
+Status: verified
 
 <!-- One value only: draft → approved (Stu) → built (agent, all agent-run checks pass) → verified (Stu, human checks pass).
      The plan-gate hook reads this line: app code is blocked until it says approved. -->
@@ -9,7 +9,7 @@ Status: draft
 
 ## Goal
 
-A visitor clicks PROBELL on the index and reads `/work/probell` as an article: a centred reading column with a headline, the problem as the deck, and the facts. A wide cover image follows, then the story with callouts, wide figures and highlighted code. It ends on the next project. The route still builds when every case study is a draft.
+A visitor clicks PROBELL on the index and reads `/work/probell` as an article: a centred reading column with a headline, the problem as the deck, and the facts. A wide cover image follows, then the story with callouts, wide figures and plain code blocks. It ends on the next project. The route still builds when every case study is a draft.
 
 ## Brief
 
@@ -204,4 +204,45 @@ Proposed. Stu edits AGENTS.md and the design system.
 
 ## Result
 
-Filled at close-out.
+Built to mockup E as planned: `/work/<slug>` is a centred article page with a header (kicker, headline, deck, facts under ink rules, optional `LIVE SITE ↗`), a wide cover, the MDX body (callouts, numbered figures with an optional wide breakout, plain code frames with a filename bar), and a next-project ending that wraps to the first. The route builds with every case study set to draft. Changes from the plan:
+
+- **Unknown slugs answer HTTP 200, not 404.** With Cache Components the prerendered shell is sent first, so a slug resolved at request time keeps 200. Next still renders the not-found page and adds `noindex`. This is documented Next 16 behaviour. Stu accepted it at step 4, and the e2e checks the not-found page and `noindex` instead of the status. A slug resolved while the site builds (`_empty` in an all-drafts build) still returns a real 404.
+- **The live site field is `liveUrl`, not `url`.** Plan 03 already computes `url` (the page path, `/work/<slug>`), and the transform silently overwrote the frontmatter value, so "Live site" would have linked to the case study itself. It was caught before commit. A test now checks that the two stay apart. Probell gets `liveUrl: https://probellnutrition.com`, taken from its own Outcome text.
+- **The column is a fixed `43.75rem`** (`--container-measure`, about 680px, the mockup's measured width), not `68ch`. A `ch` value resolves against each element's own font size, so headings and paragraphs would have had different column widths. The wide measure is `--container-wide: 64rem`.
+- **A new `headline` type role** (`clamp(2.25rem, 5vw, 3.5rem)`, 800) for the case study `h1`, as in the mockup. It's used instead of stepping down `h1`, which the menu links also use.
+- **`compileBody` moved to `src/lib/content/mdx/compile.ts`**, so tests run the exact pipeline the build uses. `content-collections.ts` imports it.
+- **Code fence titles and figure numbers** are two small rehype steps (`code-meta.ts`, `number-figures.ts`) with no new dependency. The fence meta is read from `data.meta` on the hast `code` element; the planned remark fallback wasn't needed.
+- **Code filenames keep their real case.** The mockup showed them uppercase through the meta style; filenames are case-sensitive.
+- **The next-project arrow nudge** is `motion-safe:` only: no movement at all under reduced motion. Tailwind v4's `translate-x-*` sets the CSS `translate` property, not `transform`.
+- **Screenshots** of both case studies come from the existing route loop in `e2e/screenshots.spec.ts` (fed by `routes.ts`), so that spec didn't change.
+
+**Test files changed**
+
+- `e2e/case-study.spec.ts`: new. Header and facts, live link shown or hidden, cover alt text, page title, a centred column of at most 700px and a centred wide cover at 1440px, no horizontal scroll and code scrolling inside its frame at 375px, callout labels, sections starting at `h2`, next-project order and wrap, `← Index`, hover and focus parity on three links, the arrow nudge (none under reduced motion), unknown slugs showing the not-found page with `noindex`, and every homepage row landing on a rendered case study.
+- `e2e/routes.ts`: adds `/work/probell` and `/work/sundet`, so smoke, axe and screenshots cover them.
+- `src/lib/content/mdx/code-meta.test.ts`, `number-figures.test.ts` and `components.test.tsx`: new.
+- `src/features/case-study/facts.test.ts`: new.
+- `src/lib/content/derive.test.ts`: tests for `staticSlugs` and `nextCaseStudy`.
+- `src/lib/content/schemas.test.ts`: tests for `liveUrl` (optional; http and https only).
+- `src/lib/content/index.test.ts`: a new test that `url` and `liveUrl` stay apart.
+- `src/styles/type-scale.test.ts`: `headline` added to the role list.
+- `vitest.config.mts`: `include` now also runs `*.test.tsx`.
+
+No existing test was removed or weakened.
+
+**Checks run:** typecheck, lint, 156 unit tests, `npm run build` (plus the all-drafts spike at step 3), 126 e2e tests with axe on both case studies, and screenshots at 375, 768 and 1440px with and without reduced motion (48 + 12, all passing).
+
+**Differences from mockup E**, all content rather than code:
+
+- The headline reads "Probell Nutrition". The `title` hasn't been rewritten as a headline yet (Decision 2).
+- SUNDET's `title`, `client`, `role` and `summary` are still `TODO`, so its page and Probell's next-project link show "TODO".
+- No case study has a figure or code block yet, so neither appears on a page. Unit tests cover both, and one e2e test injects a code frame.
+- Read time is 2 min, not the mockup's placeholder 4 min.
+
+**Pending for Stu**
+
+- read `/work/probell` on a phone and a laptop: does it read like an article, and is the column width right?
+- rewrite one `title` as a headline, and add a code block and a `<Figure wide>` using only `content/README.md`
+- fill in SUNDET's `TODO` frontmatter
+- rename roadmap line 05 and add a line for the blog plan (05b)
+- decide the AGENTS.md and design-system updates proposed above

@@ -25,6 +25,9 @@ export const caseStudySchema = z.strictObject({
   preview: z
     .strictObject({ src: z.string().min(1), alt: z.string().min(1) })
     .optional(),
+  // The live site, shown as LIVE SITE on the case study page (plan 05).
+  // Not `url`: that is the computed page path (/work/<slug>).
+  liveUrl: z.url({ protocol: /^https?$/ }).optional(),
   draft,
 });
 
