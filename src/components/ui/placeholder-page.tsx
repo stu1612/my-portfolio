@@ -1,5 +1,5 @@
 // Temporary content for sections whose real pages arrive in later plans
-// (About: 07, Blog and Now: 03, Contact: 06). Replace, don't extend.
+// (About and Now: 07, Contact: 06). Replace, don't extend.
 
 export function PlaceholderPage({ title }: { title: string }) {
   return (

@@ -42,12 +42,16 @@ title: Why I validate content at build time
 description: Bad content should never deploy. # max 160 characters, also the meta description
 published: 2026-11-24 # YYYY-MM-DD
 updated: 2026-12-01 # optional
-tags: # optional
-  - nextjs
-  - content
+tags: # optional; shown as written
+  - Next.js
+  - Content
 draft: false
 ---
 ```
+
+On `/blog`, each post is a row with its `published` date, `title`, `description`, read time and `tags`, newest first. On the post page (`/blog/<filename>`), `title` is the headline and `description` the line under it. The tags and, if set, the `updated` date sit under a rule below that. Tags are plain text, not links.
+
+Each post ends with a link to the next older post. The oldest post has none, only "All posts".
 
 ## Now
 

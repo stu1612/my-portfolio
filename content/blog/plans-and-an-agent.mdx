@@ -1,0 +1,39 @@
+---
+title: Building this site with plans and an agent
+description: Every feature starts as a written plan I approve before any code is written. What that changed, and what it didn't.
+published: 2026-11-28
+tags:
+  - Agents
+  - Process
+draft: false
+---
+
+## The setup
+
+Every feature on this site starts as a plan in `prompts/`: a goal, the decisions I sign off, and steps that each end in a commit. An agent drafts the plan. I read it, answer its decisions and set its status to `approved`. Only then can it touch `src/`.
+
+```md title="prompts/05b-blog.md"
+Status: approved
+
+## Goal
+
+A visitor opens /blog, sees every post newest first with its date, and opens one.
+```
+
+## Guards, not trust
+
+The rules live in `AGENTS.md`, and hooks enforce the ones that matter. App code is blocked until the plan says `approved`. Commits on `dev` and `main` are blocked. So are new dependencies, pushes and merges, and finishing a turn while typecheck, lint or unit tests fail.
+
+<Callout type="ai">
+  The agent proposes; I decide. Every decision it can't make alone is listed in
+  the plan with its recommendation first, and I answer it before the build.
+</Callout>
+
+## What changed
+
+- **Decisions are written down.** Each plan keeps the options I turned down and why, so the history of the site is readable without the git log.
+- **Small steps.** One commit per step, each after its check passes, so a broken step is easy to find.
+
+## What didn't
+
+The work still needs judgement. A plan makes the choices visible; it doesn't make them for me.

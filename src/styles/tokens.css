@@ -123,6 +123,7 @@
      not ch, so headings and body share one column: about 68ch of body text. */
   --container-measure: 43.75rem;
   --container-wide: 64rem; /* cover and wide figures break out to this */
+  --container-date: 9rem; /* blog list: the date column from 720px */
 
   /* Radius */
   --radius-sm: 4px; /* inline code, tags, focus ring */
