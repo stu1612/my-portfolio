@@ -12,7 +12,8 @@ Current intent only: one line per plan, no implementation detail. Details belong
 
 - [✅] 03 Content pipeline: one MDX system with typed collections for case studies, blog and Now
 - [✅] 04 Project index: dark gradient stage, rows, title fade, preview images, mobile behaviour
-- [ ] 05 Case study and blog post templates
+- [✅] 05 Case study template
+- [ ] 05b Blog list and post template
 - [ ] 06 Contact form: validation, spam protection, Resend
 
 ## M3 · Launch — shippable: v1
