@@ -1,9 +1,10 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 type ArticleEndProps = {
   /** Accessible name of the nav: "More work", "More posts". */
   label: string;
-  next?: { href: string; kicker: string; title: string };
+  next?: { href: string; kicker: ReactNode; title: string };
   back: { href: string; label: string };
 };
 

@@ -39,8 +39,14 @@ describe("content queries (outside production)", () => {
     expect(getCaseStudy("nope")).toBeUndefined();
   });
 
-  it("returns no posts while none are written", () => {
-    expect(getPosts()).toEqual([]);
+  it("returns posts newest first, and finds one by slug", () => {
+    const posts = getPosts();
+    expect(posts.length).toBeGreaterThan(0);
+    const dates = posts.map((post) => post.published);
+    expect(dates).toEqual([...dates].sort().reverse());
+    expect(getPost(posts[0].slug)).toMatchObject({
+      url: `/blog/${posts[0].slug}`,
+    });
     expect(getPost("nope")).toBeUndefined();
   });
 

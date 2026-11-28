@@ -49,8 +49,3 @@ export function rowMeta(post: {
 }): string {
   return [`${post.readingMinutes} min`, ...post.tags].join(" · ");
 }
-
-/** The label over the older-post link: "Older post · 10 Nov 2026". */
-export function olderLabel(published: string): string {
-  return `Older post · ${formatDate(published)}`;
-}

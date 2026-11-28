@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  formatDate,
-  listKicker,
-  olderLabel,
-  postKicker,
-  rowMeta,
-} from "./format";
+import { formatDate, listKicker, postKicker, rowMeta } from "./format";
 
 describe("formatDate", () => {
   it("formats an ISO date as day, short month and year", () => {
@@ -76,11 +70,5 @@ describe("rowMeta", () => {
     expect(rowMeta({ readingMinutes: 6, tags: ["Agents", "Process"] })).toBe(
       "6 min · Agents · Process",
     );
-  });
-});
-
-describe("olderLabel", () => {
-  it("labels the older post with its date", () => {
-    expect(olderLabel("2026-11-10")).toBe("Older post · 10 Nov 2026");
   });
 });
