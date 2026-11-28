@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05b blog list · option B: by year</title>
+    <!-- Design reference for prompts/05b-blog.md. Not app code.
+         Post titles are placeholders. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="../../../src/styles/tokens.css" />
+    <link rel="stylesheet" href="../05-case-study/base.css" />
+    <link rel="stylesheet" href="blog.css" />
+    <style>
+      /* Option B: a dense log. Posts grouped by year under an ink rule (the
+         case study facts' rule); each row is a title and a short date. No
+         descriptions. */
+      .year {
+        margin-top: calc(var(--sp) * 12);
+      }
+      .year:first-of-type {
+        margin-top: 0;
+      }
+      .year h2 {
+        border-top: 1px solid var(--ink);
+        padding-top: calc(var(--sp) * 2);
+        margin-bottom: calc(var(--sp) * 2);
+      }
+      .posts {
+        list-style: none;
+        padding: 0;
+      }
+      .posts li + li {
+        border-top: 1px solid var(--hairline);
+      }
+      .post {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: calc(var(--sp) * 6);
+        padding-block: calc(var(--sp) * 4);
+      }
+      .post .title {
+        font-weight: 700;
+      }
+      .post .date {
+        flex: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar gutter">
+      <a class="meta" href="#">Stu Bolderson</a>
+      <div class="bar-right">
+        <p class="status meta">
+          <span class="dot"></span>Lund 14:32 · Open to work
+        </p>
+        <span class="menu-icon" aria-label="Menu"
+          ><span></span><span></span><span></span
+        ></span>
+      </div>
+    </header>
+
+    <main class="gutter">
+      <div class="col page-head">
+        <p class="meta muted">Blog · 5 posts</p>
+        <h1 class="headline">Blog</h1>
+        <p class="dek">
+          Notes from building for the web: the decisions, the mistakes and what
+          I'd do again.
+        </p>
+      </div>
+
+      <div class="col">
+        <section class="year" aria-labelledby="y2026">
+          <h2 class="meta" id="y2026">2026</h2>
+          <ol class="posts">
+            <li>
+              <a class="row-link post" href="post.html">
+                <span class="title"
+                  >Building this site with plans and an agent</span
+                >
+                <time class="meta muted date" datetime="2026-11-28"
+                  >28 Nov</time
+                >
+              </a>
+            </li>
+            <li>
+              <a class="row-link post" href="post.html">
+                <span class="title"
+                  >Why my case studies start with the problem</span
+                >
+                <time class="meta muted date" datetime="2026-11-10"
+                  >10 Nov</time
+                >
+              </a>
+            </li>
+            <li>
+              <a class="row-link post" href="post.html">
+                <span class="title">Images in public/ skip Astro's pipeline</span>
+                <time class="meta muted date" datetime="2026-10-02"
+                  >2 Oct</time
+                >
+              </a>
+            </li>
+            <li>
+              <a class="row-link post" href="post.html">
+                <span class="title"
+                  >Content that fails the build, not the page</span
+                >
+                <time class="meta muted date" datetime="2026-09-14"
+                  >14 Sep</time
+                >
+              </a>
+            </li>
+          </ol>
+        </section>
+
+        <section class="year" aria-labelledby="y2025">
+          <h2 class="meta" id="y2025">2025</h2>
+          <ol class="posts">
+            <li>
+              <a class="row-link post" href="post.html">
+                <span class="title"
+                  >Designing around packaging that already exists</span
+                >
+                <time class="meta muted date" datetime="2025-12-03"
+                  >3 Dec</time
+                >
+              </a>
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="col page-end">
+        <a class="arrow-link meta" href="#"
+          ><span aria-hidden="true">←</span> Index</a
+        >
+      </div>
+    </main>
+
+    <footer class="foot gutter">
+      <p class="meta muted">© 2026 Stu Bolderson</p>
+    </footer>
+  </body>
+</html>

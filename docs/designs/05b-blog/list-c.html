@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05b blog list · option C: latest first</title>
+    <!-- Design reference for prompts/05b-blog.md. Not app code.
+         Post titles and descriptions are placeholders. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="../../../src/styles/tokens.css" />
+    <link rel="stylesheet" href="../05-case-study/base.css" />
+    <link rel="stylesheet" href="blog.css" />
+    <style>
+      /* Option C: the newest post leads at h2 size with its description and
+         a read link, under an ink rule. The rest follow as compact rows. */
+      .latest {
+        border-top: 1px solid var(--ink);
+        padding-top: calc(var(--sp) * 4);
+      }
+      .latest .row-link {
+        display: grid;
+        gap: calc(var(--sp) * 4);
+      }
+      .latest .h2 {
+        font-weight: 800;
+      }
+      .latest .desc {
+        color: var(--ink-muted);
+      }
+      .earlier {
+        margin-top: calc(var(--sp) * 16);
+      }
+      .earlier h2 {
+        border-top: 1px solid var(--ink);
+        padding-top: calc(var(--sp) * 2);
+        margin-bottom: calc(var(--sp) * 2);
+      }
+      .posts {
+        list-style: none;
+        padding: 0;
+      }
+      .posts li + li {
+        border-top: 1px solid var(--hairline);
+      }
+      .post {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: calc(var(--sp) * 6);
+        padding-block: calc(var(--sp) * 4);
+      }
+      .post .title {
+        font-weight: 700;
+      }
+      .post .date {
+        flex: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bar gutter">
+      <a class="meta" href="#">Stu Bolderson</a>
+      <div class="bar-right">
+        <p class="status meta">
+          <span class="dot"></span>Lund 14:32 · Open to work
+        </p>
+        <span class="menu-icon" aria-label="Menu"
+          ><span></span><span></span><span></span
+        ></span>
+      </div>
+    </header>
+
+    <main class="gutter">
+      <div class="col page-head">
+        <p class="meta muted">Blog · 5 posts</p>
+        <h1 class="headline">Blog</h1>
+        <p class="dek">
+          Notes from building for the web: the decisions, the mistakes and what
+          I'd do again.
+        </p>
+      </div>
+
+      <section class="col latest" aria-label="Latest post">
+        <a class="row-link" href="post.html">
+          <span class="meta muted"
+            >Latest · <time datetime="2026-11-28">28 Nov 2026</time> · 6
+            min</span
+          >
+          <span class="h2 title"
+            >Building this site with plans and an agent</span
+          >
+          <span class="desc"
+            >Every feature starts as a written plan I approve. What that
+            changed, and what it didn't.</span
+          >
+          <span class="meta"
+            >Read <span class="arrow" aria-hidden="true">→</span></span
+          >
+        </a>
+      </section>
+
+      <section class="col earlier" aria-labelledby="earlier">
+        <h2 class="meta" id="earlier">Earlier</h2>
+        <ol class="posts">
+          <li>
+            <a class="row-link post" href="post.html">
+              <span class="title"
+                >Why my case studies start with the problem</span
+              >
+              <time class="meta muted date" datetime="2026-11-10"
+                >10 Nov 2026</time
+              >
+            </a>
+          </li>
+          <li>
+            <a class="row-link post" href="post.html">
+              <span class="title">Images in public/ skip Astro's pipeline</span>
+              <time class="meta muted date" datetime="2026-10-02"
+                >2 Oct 2026</time
+              >
+            </a>
+          </li>
+          <li>
+            <a class="row-link post" href="post.html">
+              <span class="title"
+                >Content that fails the build, not the page</span
+              >
+              <time class="meta muted date" datetime="2026-09-14"
+                >14 Sep 2026</time
+              >
+            </a>
+          </li>
+          <li>
+            <a class="row-link post" href="post.html">
+              <span class="title"
+                >Designing around packaging that already exists</span
+              >
+              <time class="meta muted date" datetime="2025-12-03"
+                >3 Dec 2025</time
+              >
+            </a>
+          </li>
+        </ol>
+      </section>
+
+      <div class="col page-end">
+        <a class="arrow-link meta" href="#"
+          ><span aria-hidden="true">←</span> Index</a
+        >
+      </div>
+    </main>
+
+    <footer class="foot gutter">
+      <p class="meta muted">© 2026 Stu Bolderson</p>
+    </footer>
+  </body>
+</html>
