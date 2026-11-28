@@ -8,6 +8,7 @@ const scale = parseTypeScale(css);
 const roles = [
   "display-index",
   "display-hero",
+  "headline",
   "h1",
   "h2",
   "h3",
